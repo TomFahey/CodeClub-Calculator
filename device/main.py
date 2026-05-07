@@ -1,8 +1,22 @@
 # main.py
 # =======
-# This is the student code for the CodeClub Calculator project.
-# It is written session by session, building up the full calculator.
+# This is YOUR code! You will build this up over four sessions.
+# Each session, you will add more to make your calculator smarter.
 #
-# To run: copy this file and calculator_ui.py to the Tab5, then reset.
+# To run: make sure calculator_ui.py is on the device, then press Run.
 
-# TODO: Student code to be added session by session
+# Import the calculator screen functions from our helper module
+from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+
+# ── Session 1: Hello, Screen! ─────────────────────────────────────────────────
+# Draw the screen and show a message. That's it for now!
+
+setup_screen()
+
+show_result("Hello!")
+
+
+# ── Always the last line ───────────────────────────────────────────────────────
+# run() keeps the screen alive. Nothing below this line will ever run.
+run()
