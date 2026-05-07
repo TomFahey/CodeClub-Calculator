@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 4: Finishing Touches — CodeClub Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+
+<nav class="lesson-nav">
+  <a href="lesson3.html">&larr; Session 3</a>
+  <span class="lesson-badge">Session 4</span>
+  <span></span>
+</nav>
+
+<main>
+  <h1>Session 4: Finishing Touches</h1>
+  <p>You have a working calculator — brilliant! This session you'll add the last three buttons: <strong>C</strong> (clear), <strong>DEL</strong> (delete the last digit), and <strong>+/−</strong> (flip the sign). You'll also get the chance to write a brand-new function yourself as a stretch goal.</p>
+
+  <!-- ── Concept: len() ───────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">📏 New idea: <code>len()</code></div>
+    <div class="analogy">
+      <strong>Think of a ruler measuring a word.</strong>
+      <code>len("hello")</code> counts the letters and gives you <code>5</code>.
+      <code>len("")</code> is <code>0</code> — an empty string has no characters at all.
+    </div>
+    <p>We use <code>len(current_input)</code> in <code>press_delete</code> to check there is actually something to delete before we try to remove it.</p>
+  </div>
+
+  <!-- ── Concept: string slicing ──────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">✂️ New idea: string slicing</div>
+    <div class="analogy">
+      <strong>Think of tearing letters off a paper strip.</strong>
+      <ul>
+        <li><code>"hello"[:-1]</code> tears off the <em>last</em> letter → <code>"hell"</code></li>
+        <li><code>"hello"[1:]</code> tears off the <em>first</em> letter → <code>"ello"</code></li>
+        <li><code>"hello"[0]</code> reads just the <em>first</em> letter → <code>"h"</code></li>
+      </ul>
+    </div>
+    <p>The numbers inside the square brackets are called a <strong>slice</strong>. <code>[:-1]</code> means "from the start, up to but not including the last character".</p>
+  </div>
+
+  <!-- ── Function: press_clear ────────────────────────────────────── -->
+  <h2>Function 1: <code>press_clear</code></h2>
+  <p>This resets everything back to the way it was at the start — like a fresh calculator.</p>
+  <pre><code class="language-python">def press_clear():
+    global current_input, first_number, operator, start_new_number
+    current_input    = ""
+    first_number     = 0
+    operator         = ""
+    start_new_number = False
+    show_input("")
+    show_result("0")</code></pre>
+  <p>Every variable is returned to its starting value, and the screen is cleared to show <code>0</code>.</p>
+
+  <!-- ── Function: press_delete ───────────────────────────────────── -->
+  <h2>Function 2: <code>press_delete</code></h2>
+  <p>This removes the last character the user typed — handy if you press the wrong digit.</p>
+  <pre><code class="language-python">def press_delete():
+    global current_input
+    if len(current_input) > 0:
+        current_input = current_input[:-1]
+    show_input(current_input)</code></pre>
+  <ul>
+    <li><code>len(current_input) > 0</code> — only delete if there is something there.</li>
+    <li><code>current_input[:-1]</code> — take everything <em>except</em> the last character.</li>
+  </ul>
+
+  <!-- ── Function: press_negate ───────────────────────────────────── -->
+  <h2>Function 3: <code>press_negate</code></h2>
+  <p>This flips the sign of the current number: positive becomes negative, negative becomes positive.</p>
+  <pre><code class="language-python">def press_negate():
+    global current_input
+    if current_input == "" or current_input == "0":
+        return
+    if current_input[0] == "-":
+        current_input = current_input[1:]
+    else:
+        current_input = "-" + current_input
+    show_input(current_input)</code></pre>
+  <ul>
+    <li>If there's nothing to negate, <code>return</code> exits early.</li>
+    <li><code>current_input[0] == "-"</code> checks if the number is already negative.</li>
+    <li>If it is, <code>current_input[1:]</code> removes the leading minus sign.</li>
+    <li>If it isn't, we stick <code>"-"</code> on the front with <code>"-" + current_input</code>.</li>
+  </ul>
+
+  <!-- ── The placeholders spring to life ──────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">✨ The placeholders spring to life!</div>
+    <p>Remember those lines in <code>handle_key</code> from Session 2?</p>
+    <pre><code class="language-python">elif key == "C":
+    press_clear()
+elif key == "DEL":
+    press_delete()
+elif key == "+/-":
+    press_negate()</code></pre>
+    <p>They were written as <em>placeholders</em> — they referred to functions that didn't exist yet.
+    Now that you've written <code>press_clear</code>, <code>press_delete</code>, and <code>press_negate</code>, those branches work!</p>
+  </div>
+
+  <!-- ── Steps ────────────────────────────────────────────────────── -->
+  <h2>Step by step</h2>
+  <ol class="steps">
+    <li>Add <code>press_clear</code>, <code>press_delete</code>, and <code>press_negate</code> to your program, above <code>handle_key</code>.</li>
+    <li>Press <strong>Run</strong>.</li>
+    <li>Type <strong>42</strong>, then press <strong>+/−</strong>. You should see <strong>−42</strong>.</li>
+    <li>Press <strong>DEL</strong>. The <strong>2</strong> should disappear, leaving <strong>−4</strong>.</li>
+    <li>Press <strong>C</strong>. Everything should reset and show <strong>0</strong>.</li>
+  </ol>
+
+  <!-- ── Try It ───────────────────────────────────────────────────── -->
+  <div class="try-it">
+    <h3>🎮 Try it!</h3>
+    <p>Run the full calculator and test all three new buttons. Then try a full sum: type <strong>9 + 6 =</strong> to get 15, then press <strong>+/−</strong> to flip it to −15.</p>
+    <details><summary>💡 Hint</summary>
+      <p>If a button still does nothing, check that you added all three functions <em>above</em> <code>handle_key</code> in your file.</p>
+    </details>
+  </div>
+
+  <!-- ── Challenge ────────────────────────────────────────────────── -->
+  <div class="challenge">
+    <h3>⭐ Stretch Goal: Write <code>press_percent</code></h3>
+    <p>Can you write a function that divides the current number by 100? Typing <code>50</code> then pressing <code>%</code> should show <code>0.5</code>.</p>
+    <p>Here is a scaffold to get you started:</p>
+    <pre><code class="language-python">def press_percent():
+    global current_input
+    if current_input == "":
+        return
+    # YOUR CODE HERE: convert current_input to a float,
+    # divide it by 100, and put the result back into current_input.
+    # Then call show_input(current_input).</code></pre>
+    <p>Then add this line inside <code>handle_key</code>:</p>
+    <pre><code class="language-python">elif key == "%":
+    press_percent()</code></pre>
+    <details><summary>💡 Hint</summary>
+      <p>Look at how <code>press_negate</code> works — it reads <code>current_input</code>, does something to it, and puts the result back.
+      Do the same thing but divide by 100 instead of flipping the sign.
+      Don't forget to convert the result to a string with <code>str()</code> before storing it back.</p>
+    </details>
+    <details><summary>💡 Bigger hint</summary>
+      <pre><code class="language-python">def press_percent():
+    global current_input
+    if current_input == "":
+        return
+    value = float(current_input) / 100
+    current_input = str(value)
+    show_input(current_input)</code></pre>
+    </details>
+  </div>
+
+  <div class="try-it">
+    <h3>🎉 You've built a calculator!</h3>
+    <p>Your program can add, subtract, multiply, and divide. It handles decimals, avoids division by zero, and has a proper clear and delete. That's a real app — well done!</p>
+  </div>
+
+</main>
+
+<nav class="lesson-nav">
+  <a href="lesson3.html">&larr; Session 3</a>
+  <span class="lesson-badge">Session 4</span>
+  <span></span>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

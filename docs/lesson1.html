@@ -3,154 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 1 — Hello, Screen! | CodeClub Calculator</title>
+  <title>Session 1: Hello, Screen! — CodeClub Calculator</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <script>hljs.highlightAll();</script>
 </head>
 <body>
 
-  <nav class="lesson-nav">
-    <a href="index.html">🏠 All Lessons</a>
-    <span class="lesson-badge">Session 1 of 4</span>
-    <a href="lesson2.html">Session 2 →</a>
-  </nav>
+<nav class="lesson-nav">
+  <a href="index.html">🏠 Home</a>
+  <span class="lesson-badge">Session 1</span>
+  <a href="lesson2.html">Next &rarr; Session 2</a>
+</nav>
 
-  <header>
-    <h1>🖥️ Session 1: Hello, Screen!</h1>
+<main>
+  <h1>Session 1: Hello, Screen!</h1>
+  <p>In this session you will write your very first Python program and make the calculator screen show a message.</p>
+
+  <!-- ── Concept: import ──────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">🧰 New idea: <code>import</code></div>
+    <div class="analogy">
+      <strong>Think of a toolbox.</strong> Someone else has already built some really useful tools —
+      <code>setup_screen</code>, <code>show_result</code>, and friends.
+      We didn't write them, but we can <em>borrow</em> them.
+      The word <code>import</code> is how we open that toolbox and take out the tools we need.
+    </div>
+    <p>Type this line at the very top of your program to borrow the calculator tools:</p>
+    <pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run</code></pre>
     <p>
-      Today you are going to make something appear on a real screen — a touchscreen tablet
-      that you can hold in your hands. By the end of this session, your calculator will
-      draw its screen and show a message. It won't do sums yet, but it will look like a
-      proper calculator. Let's go!
+      <code>calculator_ui</code> is the name of the toolbox.<br>
+      Everything after <code>import</code> is the list of tools we want to take out.
     </p>
-  </header>
+  </div>
 
-  <section>
-    <h2>New Ideas This Session</h2>
-
-    <div class="concept-box">
-      <div class="concept-title">📦 import</div>
-      <div class="analogy">Imagine a toolbox in another room. <code>import</code> is how you carry those tools into your workspace so you can use them.</div>
-      <p>
-        Somebody else has already written all the complicated code that draws the screen
-        and handles the buttons. It lives in a file called <code>calculator_ui</code>.
-        With <code>import</code>, we borrow those tools for our program.
-      </p>
+  <!-- ── Concept: calling a function ─────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">🔘 New idea: calling a function</div>
+    <div class="analogy">
+      <strong>Imagine a machine with buttons.</strong>
+      Each button makes something happen.
+      <code>setup_screen()</code> is like pressing the "start up the screen" button —
+      the brackets <code>()</code> mean "go and do this job right now".
     </div>
+    <p>Add this line to set up the calculator screen:</p>
+    <pre><code class="language-python">setup_screen()</code></pre>
+    <p>Next, tell the screen what to show. We pass a message inside the brackets:</p>
+    <pre><code class="language-python">show_result("Hello!")</code></pre>
+    <p>The text between the quote marks is called a <strong>string</strong>. You can put any words you like in there.</p>
+  </div>
 
-    <div class="concept-box">
-      <div class="concept-title">⚙️ Calling a function</div>
-      <div class="analogy">A function is like a button on a microwave. You press "Start" and it does the job — you don't need to know how the microwave works inside.</div>
-      <p>
-        In Python, you call a function by writing its name followed by <code>()</code>.
-        We'll use three functions today: <code>setup_screen()</code>, <code>show_result()</code>,
-        and <code>run()</code>.
-      </p>
+  <!-- ── Concept: run() ───────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">▶️ New idea: <code>run()</code></div>
+    <div class="analogy">
+      <strong>Think of it like pressing Play on a video.</strong>
+      Until you press Play, nothing moves.
+      <code>run()</code> starts the calculator and keeps the screen alive so you can see it and tap the buttons.
     </div>
+    <p>Always put <code>run()</code> as the <strong>very last line</strong> of your program.
+    Any code you write <em>after</em> <code>run()</code> will never be reached.</p>
+    <pre><code class="language-python">run()</code></pre>
+  </div>
 
-    <div class="concept-box">
-      <div class="concept-title">🔤 Strings</div>
-      <div class="analogy">A string is a piece of text wrapped in speech marks — like a note you pass to a function.</div>
-      <p>
-        Whenever you want to give a function some text, wrap it in speech marks:
-        <code>"Hello!"</code>. The speech marks tell Python "this is text, not a command".
-      </p>
-    </div>
-
-  </section>
-
-  <section>
-    <h2>Step-by-Step</h2>
-
-    <ol class="steps">
-
-      <li>
-        <strong>Open main.py</strong> in the UIFlow2 editor on your computer.
-        You should see a mostly empty file. That's fine — you're about to fill it!
-      </li>
-
-      <li>
-        <strong>Type the import line.</strong> This goes right at the top of the file.
-<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run</code></pre>
-        <p>This one line borrows five tools from the <code>calculator_ui</code> helper file:
-        each tool is a function you'll use to control the calculator screen.</p>
-        <details><summary>💡 Hint — what does <code>from ... import</code> mean?</summary>
-          <p><code>from calculator_ui</code> means "go to the file called calculator_ui".<br>
-          <code>import setup_screen, ...</code> means "bring these specific tools into my program".<br>
-          After this line, you can use <code>setup_screen()</code> directly — no need to write
-          <code>calculator_ui.setup_screen()</code> every time.</p>
-        </details>
-      </li>
-
-      <li>
-        <strong>Call <code>setup_screen()</code>.</strong> Add this line next:
-<pre><code class="language-python">setup_screen()</code></pre>
-        <p>This draws the calculator screen — the two display boxes at the top and all
-        twenty keys below. It only needs to be called once, right at the start.</p>
-      </li>
-
-      <li>
-        <strong>Show a welcome message.</strong> Add this line:
-<pre><code class="language-python">show_result("Hello!")</code></pre>
-        <p><code>show_result()</code> puts text or a number into the big result box on screen.
-        The text <code>"Hello!"</code> goes inside the brackets, wrapped in speech marks.</p>
-        <details><summary>💡 Hint — what if I forget the speech marks?</summary>
-          <p>Without speech marks Python thinks <code>Hello!</code> is a variable name,
-          and it will show an error because no variable called <code>Hello!</code> exists.
-          Always wrap text in <code>" "</code> to make it a string.</p>
-        </details>
-      </li>
-
-      <li>
-        <strong>Add <code>run()</code> at the very end.</strong>
-<pre><code class="language-python">run()</code></pre>
-        <p><code>run()</code> keeps the screen alive. Without it, the program would finish
-        in a blink and the screen would go blank. Always make this the last line.</p>
-      </li>
-
-    </ol>
-
-    <p>Your complete <code>main.py</code> should now look like this:</p>
-<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+  <!-- ── Full code for this session ──────────────────────────────── -->
+  <h2>Your full program for Session 1</h2>
+  <p>Put it all together. Your program should look exactly like this:</p>
+  <pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
 
 setup_screen()
-
 show_result("Hello!")
-
 run()</code></pre>
 
-  </section>
+  <!-- ── Steps ────────────────────────────────────────────────────── -->
+  <h2>Step by step</h2>
+  <ol class="steps">
+    <li>Open your program in the <strong>UIFlow2 IDE</strong>.</li>
+    <li>Type the <code>from calculator_ui import …</code> line at the very top.</li>
+    <li>On a new line, type <code>setup_screen()</code>.</li>
+    <li>On the next line, type <code>show_result("Hello!")</code>.</li>
+    <li>On the very last line, type <code>run()</code>.</li>
+    <li>Press the <strong>Run</strong> button. You should see the calculator screen appear with <strong>Hello!</strong> on it.</li>
+  </ol>
 
-  <section>
-    <div class="try-it">
-      <div class="try-it-title">▶️ Try It!</div>
-      <p>Make sure <code>calculator_ui.py</code> is already on your Tab5 (your teacher will
-      have set this up). Then press <strong>Run</strong> in the editor.</p>
-      <p>You should see the calculator screen appear on the tablet — with all its keys
-      and the message <strong>Hello!</strong> in the result display.</p>
-      <p>Try pressing some of the keys. Nothing happens yet — that's coming in Session 2! 🎉</p>
-    </div>
-  </section>
+  <!-- ── Try It ───────────────────────────────────────────────────── -->
+  <div class="try-it">
+    <h3>🎮 Try it!</h3>
+    <p>Change <code>"Hello!"</code> to your name. Press <strong>Run</strong> again. What do you see on the screen?</p>
+    <details><summary>💡 Hint</summary>
+      <p>Just swap the text inside the quote marks:
+        <code>show_result("Ada")</code> — use your own name!
+      </p>
+    </details>
+  </div>
 
-  <section>
-    <div class="challenge">
-      <div class="challenge-title">🌟 Challenge</div>
-      <p>Can you change the welcome message to say your name instead of "Hello!"?</p>
-      <p>What happens if you call <code>show_result()</code> twice, with different messages?
-      Which one appears on screen? Why do you think that is?</p>
-    </div>
-  </section>
+  <!-- ── Challenge ────────────────────────────────────────────────── -->
+  <div class="challenge">
+    <h3>⭐ Challenge</h3>
+    <p>Can you make the screen show your favourite number instead of a word?</p>
+    <details><summary>💡 Hint</summary>
+      <p>Try <code>show_result(7)</code> — numbers don't need quote marks!</p>
+    </details>
+  </div>
 
-  <footer>
-    <nav class="lesson-nav">
-      <span></span>
-      <a href="index.html">🏠 All Lessons</a>
-      <a href="lesson2.html">Session 2: Variables &amp; Buttons →</a>
-    </nav>
-    <p>CodeClub Calculator · Built with MicroPython &amp; UIFlow2 on the M5Stack Tab5</p>
-  </footer>
+</main>
 
+<nav class="lesson-nav">
+  <a href="index.html">🏠 Home</a>
+  <span class="lesson-badge">Session 1</span>
+  <a href="lesson2.html">Next &rarr; Session 2</a>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </body>
 </html>

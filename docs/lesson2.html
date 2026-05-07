@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 2: Variables &amp; Buttons — CodeClub Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+
+<nav class="lesson-nav">
+  <a href="lesson1.html">&larr; Session 1</a>
+  <span class="lesson-badge">Session 2</span>
+  <a href="lesson3.html">Next &rarr; Session 3</a>
+</nav>
+
+<main>
+  <h1>Session 2: Variables &amp; Buttons</h1>
+  <p>This session you will create the variables that store the calculator's state, and wire up the keypad so it knows which function to call when a button is tapped.</p>
+
+  <!-- ── Concept: Variables ───────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">📦 New idea: variables</div>
+    <div class="analogy">
+      <strong>Picture a labelled box.</strong>
+      You write a name on the outside, and put something inside.
+      Later you can look inside the box, swap the contents, or check what's in there.
+      In Python, <code>current_input = ""</code> means:
+      <em>"make a box called <code>current_input</code> and put an empty string in it"</em>.
+    </div>
+    <p>Our calculator needs four boxes to remember what is going on. Type these four lines:</p>
+    <pre><code class="language-python">current_input    = ""
+first_number     = 0
+operator         = ""
+start_new_number = False</code></pre>
+    <ul>
+      <li><code>current_input</code> — the digits the user has typed so far (starts empty).</li>
+      <li><code>first_number</code> — the number before the operator (starts at 0).</li>
+      <li><code>operator</code> — which operation (+, -, x, /) was pressed (starts empty).</li>
+      <li><code>start_new_number</code> — a True/False flag; <code>False</code> at the start.</li>
+    </ul>
+  </div>
+
+  <!-- ── Concept: Strings ─────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">💬 New idea: strings</div>
+    <div class="analogy">
+      <strong>A string is text between quote marks.</strong>
+      <code>""</code> is an <em>empty</em> string — like an empty box with nothing written inside.
+      <code>"Hello"</code> has five letters in it.
+    </div>
+    <p>We use strings all the time in this calculator — to show what's on the screen and to compare which key was pressed.</p>
+  </div>
+
+  <!-- ── Concept: Lists ───────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">🛒 New idea: lists</div>
+    <div class="analogy">
+      <strong>Think of a shopping list.</strong>
+      Instead of one item, a list holds many things, all in order, inside square brackets.
+    </div>
+    <p>We need two lists — one for digit keys, one for operator keys. Type these after your variables:</p>
+    <pre><code class="language-python">number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]</code></pre>
+    <p>Later we'll use <code>key in number_keys</code> to check whether a tapped key is a digit — that's like asking "is this item on my shopping list?"</p>
+  </div>
+
+  <!-- ── Concept: def ─────────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">📋 New idea: defining a function with <code>def</code></div>
+    <div class="analogy">
+      <strong>Think of writing a recipe.</strong>
+      You write the recipe once, give it a name, and then whenever you need it you just say the name.
+      <code>def handle_key(key):</code> means <em>"here is a recipe called <code>handle_key</code>; it expects one ingredient called <code>key</code>"</em>.
+    </div>
+    <p>Notice the colon <code>:</code> at the end of the <code>def</code> line, and that everything inside the function is indented (moved in with the Tab key). Python uses indentation to know what belongs inside the function.</p>
+  </div>
+
+  <!-- ── Concept: if/elif ─────────────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">🔀 New idea: <code>if</code> and <code>elif</code></div>
+    <div class="analogy">
+      <strong>Think of a set of signposts on a road.</strong>
+      The calculator checks each one in order:
+      "Is it a number key? No. Is it an operator? No. Is it equals? Yes — take this road!"
+      <code>elif</code> is short for "else if" — only check this if the previous one was False.
+    </div>
+    <p>The <code>handle_key</code> function below uses <code>if/elif</code> to decide what to do for each key. Type it after your lists:</p>
+    <pre><code class="language-python">def handle_key(key):
+    if key in number_keys:
+        add_digit(key)
+    elif key in operator_keys:
+        press_operator(key)
+    elif key == "=":
+        press_equals()
+    elif key == "C":
+        press_clear()
+    elif key == "DEL":
+        press_delete()
+    elif key == "+/-":
+        press_negate()</code></pre>
+    <div class="try-it" style="margin-top:0.8rem">
+      <p>⚠️ <strong>Don't worry</strong> that functions like <code>add_digit</code> and <code>press_operator</code> don't exist yet!
+      <code>handle_key</code> is just a <em>skeleton</em> right now — we'll fill in all those functions in Session 3.
+      For today it's OK that pressing keys doesn't do anything.</p>
+    </div>
+  </div>
+
+  <!-- ── Concept: when_key_pressed ────────────────────────────────── -->
+  <div class="concept-box">
+    <div class="concept-title">👂 New idea: <code>when_key_pressed</code></div>
+    <div class="analogy">
+      <strong>Think of setting up a doorbell.</strong>
+      You're saying: "whenever someone rings, run <em>this</em> code".
+      <code>when_key_pressed(handle_key)</code> tells the calculator:
+      "every time a key is tapped, call <code>handle_key</code> and pass in the name of the key that was pressed".
+    </div>
+    <p>Type this line after <code>handle_key</code>, and make sure <code>run()</code> is still the very last line:</p>
+    <pre><code class="language-python">when_key_pressed(handle_key)
+run()</code></pre>
+  </div>
+
+  <!-- ── Full code for this session ──────────────────────────────── -->
+  <h2>Your full program after Session 2</h2>
+  <p>Your program should now look like this (the Session 1 code stays at the top):</p>
+  <pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+setup_screen()
+show_result("Hello!")
+
+current_input    = ""
+first_number     = 0
+operator         = ""
+start_new_number = False
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
+
+def handle_key(key):
+    if key in number_keys:
+        add_digit(key)
+    elif key in operator_keys:
+        press_operator(key)
+    elif key == "=":
+        press_equals()
+    elif key == "C":
+        press_clear()
+    elif key == "DEL":
+        press_delete()
+    elif key == "+/-":
+        press_negate()
+
+when_key_pressed(handle_key)
+run()</code></pre>
+
+  <!-- ── Steps ────────────────────────────────────────────────────── -->
+  <h2>Step by step</h2>
+  <ol class="steps">
+    <li>Keep your Session 1 code at the top (<code>from … import</code>, <code>setup_screen()</code>, <code>show_result("Hello!")</code>).</li>
+    <li>Type the four variable lines (<code>current_input</code>, <code>first_number</code>, <code>operator</code>, <code>start_new_number</code>).</li>
+    <li>Type the two list lines (<code>number_keys</code> and <code>operator_keys</code>).</li>
+    <li>Type the <code>def handle_key(key):</code> function with all its <code>if/elif</code> branches. Remember to indent each line inside the function!</li>
+    <li>After the function, type <code>when_key_pressed(handle_key)</code>.</li>
+    <li>Make sure <code>run()</code> is still at the very end.</li>
+    <li>Press <strong>Run</strong>. Tap a key on the calculator — nothing happens yet, but it should not crash!</li>
+  </ol>
+
+  <!-- ── Try It ───────────────────────────────────────────────────── -->
+  <div class="try-it">
+    <h3>🎮 Try it!</h3>
+    <p>Run your program and tap a few keys. Nothing happens on screen yet — but it shouldn't crash either. That means everything is wired up correctly!</p>
+    <details><summary>💡 Hint</summary>
+      <p>If you see an error, check your indentation. Every line inside <code>def handle_key</code> must be indented by four spaces (or one Tab).</p>
+    </details>
+  </div>
+
+  <!-- ── Challenge ────────────────────────────────────────────────── -->
+  <div class="challenge">
+    <h3>⭐ Challenge</h3>
+    <p>Can you add a <code>print(key)</code> line inside <code>handle_key</code> so it prints the name of each tapped key to the console?</p>
+    <p>(You'll need to connect via USB to see the output in the console.)</p>
+    <details><summary>💡 Hint</summary>
+      <p>Add <code>print(key)</code> as the very first line inside the function — make sure it's indented!</p>
+      <pre><code class="language-python">def handle_key(key):
+    print(key)   # ← add this line
+    if key in number_keys:
+        ...</code></pre>
+    </details>
+  </div>
+
+</main>
+
+<nav class="lesson-nav">
+  <a href="lesson1.html">&larr; Session 1</a>
+  <span class="lesson-badge">Session 2</span>
+  <a href="lesson3.html">Next &rarr; Session 3</a>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>
