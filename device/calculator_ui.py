@@ -88,14 +88,20 @@ class CalculatorKey:
 
     Why this class exists
     ---------------------
-    Python closures have a well-known scoping quirk: if you use a loop
-    variable inside a callback function defined in that loop, all the
-    callbacks end up sharing the loop variable's *final* value -- so every
-    button would behave as if it were the last button created.
+    Python closures have a well-known scoping quirk: if you create a function
+    inside a loop, all the functions share the loop variable's *final* value --
+    so every button would behave as if it were the last button created.
 
-    Wrapping each button in its own object, and copying the key character
-    into a local variable 'k' inside __init__, gives every button its own
-    independent, permanent copy of its key. Problem solved.
+    Wrapping each button in its own object and storing the key as self.key
+    gives every button its own independent, permanent copy of its key label.
+
+    Why self._on_press matters
+    --------------------------
+    MicroPython's garbage collector (GC) removes objects that nothing is
+    pointing to. If we store _on_press only as a local variable inside
+    __init__, the GC may delete it once __init__ finishes -- even though
+    LVGL holds a reference to it internally. Storing it as self._on_press
+    keeps it alive for as long as the CalculatorKey object exists.
     """
 
     def __init__(self, key, col, row, font, parent):
@@ -108,16 +114,25 @@ class CalculatorKey:
             bg_c=bg_c, text_c=text_c, font=font, parent=parent
         )
 
-        # Copy the key character into 'k' right now, inside this __init__ call.
-        # Each button gets its own 'k', independent of every other button.
-        k = key
+        # Store the key label as a permanent attribute on this object.
+        # Every CalculatorKey instance gets its own self.key, independent of all others.
+        self.key = key
 
         def _on_press(event):
-            # When this button is tapped, call the student's handler with the key.
-            if _on_key_pressed is not None:
-                _on_key_pressed(k)
+            # LVGL fires several events per tap (pressed, released, clicked...).
+            # VALUE_CHANGED is the one M5Button sends when a tap is complete.
+            # Checking event.code here means the student's function is only called once.
+            if event.code == lv.EVENT.VALUE_CHANGED:
+                if _on_key_pressed is not None:
+                    _on_key_pressed(self.key)
 
-        self._btn.add_event_cb(_on_press, lv.EVENT.VALUE_CHANGED, None)
+        # Keep a reference on self so MicroPython's GC does not collect _on_press.
+        self._on_press = _on_press
+
+        # Register for ALL LVGL events; _on_press filters to VALUE_CHANGED internally.
+        # (Registering with lv.EVENT.VALUE_CHANGED as the filter does not work reliably
+        # for M5Button -- using ALL and filtering inside is the safe approach.)
+        self._btn.add_event_cb(self._on_press, lv.EVENT.ALL, None)
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
