@@ -22,7 +22,7 @@ import m5ui
 import lvgl as lv
 
 
-# ── Screen dimensions ─────────────────────────────────────────────────────────
+# ── Screen dimensions ─────────────────────────────────────────────────────────────────────
 # The Tab5 screen is 1280×720. In portrait mode (rotation 0) that becomes
 # 720 pixels wide × 1280 pixels tall -- like holding a phone upright.
 
@@ -38,8 +38,8 @@ _KW      = _SW    // _COLS     # key width  = 180 px
 _KH      = _KEYS_H // _ROWS   # key height = 200 px
 
 
-# ── Key layout (4 columns × 5 rows, read left-to-right, top-to-bottom) ────────
-_KEYS = [
+# ── Key layout (4 columns × 5 rows, read left-to-right, top-to-bottom) ────────────
+KEYS = [
     "C",   "DEL", "%",  "/",
     "7",   "8",   "9",  "x",
     "4",   "5",   "6",  "-",
@@ -48,7 +48,7 @@ _KEYS = [
 ]
 
 
-# ── Key colour scheme ─────────────────────────────────────────────────────────
+# ── Key colour scheme ───────────────────────────────────────────────────────────────
 # Different colours help students see what type each key is:
 #   Blue   = the equals key (the main "go" button)
 #   Orange = operator keys  (the maths symbols)
@@ -70,7 +70,7 @@ def _key_colours(key):
         return 0xffffff, 0x212121   # white, dark text  (digits + decimal)
 
 
-# ── Module-level state ────────────────────────────────────────────────────────
+# ── Module-level state ───────────────────────────────────────────────────────────────────
 # These variables are used internally by this module only.
 # Students never access them directly.
 
@@ -79,29 +79,24 @@ _input_display  = None   # the top text area (shows expression)
 _result_display = None   # the middle text area (shows answer)
 _font           = None   # the loaded font
 _on_key_pressed = None   # the student's callback function (set by when_key_pressed)
+_keys_store     = []     # keeps CalculatorKey objects alive (prevents garbage collection)
 
 
-# ── CalculatorKey class ───────────────────────────────────────────────────────
+# ── CalculatorKey class ───────────────────────────────────────────────────────────────
 class CalculatorKey:
     """
     Wraps a single on-screen button and remembers which key it represents.
 
     Why this class exists
     ---------------------
-    Python closures have a well-known scoping quirk: if you create a function
-    inside a loop, all the functions share the loop variable's *final* value --
-    so every button would behave as if it were the last button created.
+    Python closures have a well-known scoping quirk: if you use a loop
+    variable inside a callback function defined in that loop, all the
+    callbacks end up sharing the loop variable's *final* value -- so every
+    button would behave as if it were the last button created.
 
-    Wrapping each button in its own object and storing the key as self.key
-    gives every button its own independent, permanent copy of its key label.
-
-    Why self._on_press matters
-    --------------------------
-    MicroPython's garbage collector (GC) removes objects that nothing is
-    pointing to. If we store _on_press only as a local variable inside
-    __init__, the GC may delete it once __init__ finishes -- even though
-    LVGL holds a reference to it internally. Storing it as self._on_press
-    keeps it alive for as long as the CalculatorKey object exists.
+    Wrapping each button in its own object, and copying the key character
+    into a local variable 'k' inside __init__, gives every button its own
+    independent, permanent copy of its key. Problem solved.
     """
 
     def __init__(self, key, col, row, font, parent):
@@ -114,28 +109,25 @@ class CalculatorKey:
             bg_c=bg_c, text_c=text_c, font=font, parent=parent
         )
 
-        # Store the key label as a permanent attribute on this object.
-        # Every CalculatorKey instance gets its own self.key, independent of all others.
-        self.key = key
+        # Copy the key character into 'k' right now, inside this __init__ call.
+        # Each button gets its own 'k', independent of every other button.
+        k = key
 
         def _on_press(event):
-            # LVGL fires several events per tap (pressed, released, clicked...).
-            # VALUE_CHANGED is the one M5Button sends when a tap is complete.
-            # Checking event.code here means the student's function is only called once.
-            if event.code == lv.EVENT.VALUE_CHANGED:
+            # LVGL fires this callback for every event on the button
+            # (press, release, click, focus ...).  We only want to act
+            # once per complete tap, which LVGL reports as CLICKED.
+            if event.code == lv.EVENT.CLICKED:
                 if _on_key_pressed is not None:
-                    _on_key_pressed(self.key)
+                    _on_key_pressed(k)
 
-        # Keep a reference on self so MicroPython's GC does not collect _on_press.
+        # Store the callback on 'self' so MicroPython's garbage collector
+        # cannot delete it while the button is still on screen.
         self._on_press = _on_press
-
-        # Register for ALL LVGL events; _on_press filters to VALUE_CHANGED internally.
-        # (Registering with lv.EVENT.VALUE_CHANGED as the filter does not work reliably
-        # for M5Button -- using ALL and filtering inside is the safe approach.)
         self._btn.add_event_cb(self._on_press, lv.EVENT.ALL, None)
 
 
-# ── Public API ────────────────────────────────────────────────────────────────
+# ── Public API ────────────────────────────────────────────────────────────────────────
 
 def setup_screen():
     """
@@ -172,11 +164,11 @@ def setup_screen():
         parent=_page
     )
 
-    # Create every key in the grid
-    for i, key in enumerate(_KEYS):
+    # Create every key in the grid and store each object to prevent garbage collection
+    for i, key in enumerate(KEYS):
         col = i % _COLS
         row = i // _COLS
-        CalculatorKey(key, col, row, _font, _page)
+        _keys_store.append(CalculatorKey(key, col, row, _font, _page))
 
     _page.screen_load()
 
