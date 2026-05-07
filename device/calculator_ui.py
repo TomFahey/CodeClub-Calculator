@@ -103,28 +103,25 @@ class CalculatorKey:
         x = col * _KW
         y = _KEYS_Y + row * _KH
         bg_c, text_c = _key_colours(key)
+        # Copy the key character into 'k' right now, inside this __init__ call.
+        # Each button gets its own 'k', independent of every other button.
+        self.k = key
 
         self._btn = m5ui.M5Button(
             text=key, x=x, y=y, w=_KW, h=_KH,
             bg_c=bg_c, text_c=text_c, font=font, parent=parent
         )
-
-        # Copy the key character into 'k' right now, inside this __init__ call.
-        # Each button gets its own 'k', independent of every other button.
-        k = key
-
-        def _on_press(event):
-            # LVGL fires this callback for every event on the button
-            # (press, release, click, focus ...).  We only want to act
-            # once per complete tap, which LVGL reports as CLICKED.
-            if event.code == lv.EVENT.CLICKED:
-                if _on_key_pressed is not None:
-                    _on_key_pressed(k)
-
-        # Store the callback on 'self' so MicroPython's garbage collector
-        # cannot delete it while the button is still on screen.
-        self._on_press = _on_press
         self._btn.add_event_cb(self._on_press, lv.EVENT.ALL, None)
+
+
+    def _on_press(self, event):
+        # LVGL fires this callback for every event on the button
+        # (press, release, click, focus ...).  We only want to act
+        # once per complete tap, which LVGL reports as CLICKED.
+        if event.code == lv.EVENT.CLICKED:
+            if _on_key_pressed is not None:
+                _on_key_pressed(self.k)
+
 
 
 # ── Public API ────────────────────────────────────────────────────────────────────────
@@ -144,7 +141,8 @@ def setup_screen():
 
     # Load the monospace font for displays and key labels.
     # This font file is built into the UIFlow2 firmware on the device.
-    _font = lv.binfont_create("S:/flash/res/font/Noto Mono for Powerline-40px.bin")
+    #_font = lv.binfont_create("S:/flash/res/font/Noto Mono for Powerline-40px.bin")
+    _font = lv.font_montserrat_40   # use a built-in font instead of loading from file
 
     _page = m5ui.M5Page(bg_c=0xffffff)
 
