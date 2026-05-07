@@ -23,11 +23,12 @@ show_result("Hello!")    # show a welcome message on the result display
 # actually do something when tapped.
 # New ideas: variables, strings, def, when_key_pressed()
 
-# These four variables remember the state of the calculator at every moment.
-current_input    = ""     # the digits the user is currently typing, e.g. "123"
-first_number     = 0      # the first number, stored when an operator is pressed
-operator         = ""     # which operator was pressed: "+", "-", "x", or "/"
-start_new_number = False  # True when the next digit press should start a fresh number
+# These variables remember the state of the calculator at every moment.
+current_input      = ""     # the digits the user is currently typing, e.g. "123"
+first_number       = 0      # the first number, stored when an operator is pressed
+operator           = ""     # which operator was pressed: "+", "-", "x", or "/"
+start_new_number   = False  # True when the next digit press should start a fresh number
+display_expression = ""     # the full text shown in the top display, e.g. "7 + 5"
 
 # These lists tell us what type each key is.
 # Writing 'key in number_keys' is a quick way to check if a key is a digit.
@@ -42,9 +43,11 @@ operator_keys = ["+", "-", "x", "/"]
 
 def add_digit(key):
     # Add a digit (or decimal point) to the current input string.
-    global current_input, start_new_number
+    global current_input, start_new_number, display_expression
 
-    # If an operator or equals was just pressed, wipe the input and start fresh
+    # If an operator or equals was just pressed, wipe the input ready for the
+    # second number -- but keep display_expression so the top bar still shows
+    # the first number and operator (e.g. "7 + ")
     if start_new_number:
         current_input    = ""
         start_new_number = False
@@ -53,14 +56,15 @@ def add_digit(key):
     if key == "." and "." in current_input:
         return
 
-    current_input = current_input + key
-    show_input(current_input)
+    current_input      = current_input + key
+    display_expression = display_expression + key   # build up the full expression
+    show_input(display_expression)
 
 
 def press_operator(key):
     # Store the number typed so far as the first number, and remember
     # which operator was tapped.
-    global first_number, operator, start_new_number
+    global first_number, operator, start_new_number, display_expression
 
     # Only store the number if the user has actually typed something
     if current_input != "":
@@ -69,8 +73,9 @@ def press_operator(key):
     operator         = key
     start_new_number = True   # next digits will be the second number
 
-    # Show the first number and operator on the top display (e.g. "12 +")
-    show_input(current_input + " " + operator)
+    # Show e.g. "7 + " -- the space at the end makes room for the second number
+    display_expression = current_input + " " + operator + " "
+    show_input(display_expression)
 
 
 def calculate():
@@ -98,7 +103,7 @@ def calculate():
 
 def press_equals():
     # Work out the answer and show it on screen.
-    global current_input, first_number, operator, start_new_number
+    global current_input, first_number, operator, start_new_number, display_expression
 
     # We need an operator and a second number before we can calculate
     if operator == "" or current_input == "":
@@ -110,9 +115,10 @@ def press_equals():
     if answer == "Error":
         show_input("")
         show_result("Error!")
-        current_input    = ""
-        operator         = ""
-        start_new_number = False
+        current_input      = ""
+        operator           = ""
+        start_new_number   = False
+        display_expression = ""
         return
 
     # Tidy up: show whole numbers without ".0" at the end (show 17, not 17.0)
@@ -122,11 +128,12 @@ def press_equals():
     show_input("")        # clear the top display
     show_result(answer)   # show the answer in the main display
 
-    # Keep the answer in current_input so the user can keep calculating from it
-    current_input    = str(answer)
-    first_number     = 0
-    operator         = ""
-    start_new_number = True   # next digit press starts a brand new calculation
+    # Keep the answer so the user can keep calculating from it
+    current_input      = str(answer)
+    first_number       = 0
+    operator           = ""
+    start_new_number   = True   # next digit press starts a brand new calculation
+    display_expression = ""
 
 
 # ── Session 4: Finishing Touches ──────────────────────────────────────────────
@@ -135,12 +142,13 @@ def press_equals():
 
 def press_clear():
     # Reset everything back to the very beginning.
-    global current_input, first_number, operator, start_new_number
+    global current_input, first_number, operator, start_new_number, display_expression
 
-    current_input    = ""
-    first_number     = 0
-    operator         = ""
-    start_new_number = False
+    current_input      = ""
+    first_number       = 0
+    operator           = ""
+    start_new_number   = False
+    display_expression = ""
 
     show_input("")
     show_result("0")
@@ -148,29 +156,42 @@ def press_clear():
 
 def press_delete():
     # Remove the last character the user typed.
-    global current_input
+    global current_input, operator, start_new_number, display_expression
 
-    # len() tells us how many characters are in the string
-    if len(current_input) > 0:
-        current_input = current_input[:-1]   # [:-1] means "everything except the last"
+    if start_new_number:
+        # The last thing the user pressed was an operator -- undo it
+        operator           = ""
+        start_new_number   = False
+        display_expression = current_input   # go back to showing just the first number
+    elif len(current_input) > 0:
+        # Remove the last character from both current_input and the display
+        current_input      = current_input[:-1]      # [:-1] means "everything except the last"
+        display_expression = display_expression[:-1]
 
-    show_input(current_input)
+    show_input(display_expression)
 
 
 def press_negate():
     # Flip the sign: positive numbers become negative, and vice versa.
-    global current_input
+    global current_input, display_expression
 
     # Nothing to flip if the input is empty or just zero
     if current_input == "" or current_input == "0":
         return
+
+    # The display expression is: <prefix> + <current_input>
+    # e.g. "7 + 5"  -->  prefix = "7 + ", current_input = "5"
+    # We need to update just the current_input part, leaving the prefix alone.
+    prefix_length = len(display_expression) - len(current_input)
+    prefix        = display_expression[:prefix_length]   # e.g. "7 + " or ""
 
     if current_input[0] == "-":
         current_input = current_input[1:]    # [1:] removes the first character (the minus)
     else:
         current_input = "-" + current_input  # stick a minus sign on the front
 
-    show_input(current_input)
+    display_expression = prefix + current_input
+    show_input(display_expression)
 
 
 # ── STRETCH GOAL (Session 4) ──────────────────────────────────────────────────
@@ -198,7 +219,7 @@ def handle_key(key):
         press_equals()
     elif key == "C":            # clear: wipe everything and start again
         press_clear()
-    elif key == "DEL":          # delete: remove the last character
+    elif key == "DEL":          # delete: remove the last character (or undo operator)
         press_delete()
     elif key == "+/-":          # flip the sign of the current number
         press_negate()
