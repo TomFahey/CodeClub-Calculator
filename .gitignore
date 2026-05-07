@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# MicroPython build artefacts
+*.mpy
+
+# Editor
+.vscode/
+*.swp
+.DS_Store
+
+# Secrets / credentials
+*.env
+secrets.py
