@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 2: Variables, Lists &amp; Handling Keys — CodeClub Calculator</title>
+  <title>Session 2: Variables &amp; Lists — CodeClub Calculator</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
@@ -18,10 +18,9 @@
 
 <!-- ── HERO ───────────────────────────────────────────────────────────── -->
 <header class="lesson-hero">
-  <h1>Session 2: Variables, Lists &amp; Handling Keys</h1>
+  <h1>Session 2: Variables &amp; Lists</h1>
   <p class="subtitle">
-    Store information, organise it into lists, and teach your calculator
-    which button is which.
+    Store information and organise it into lists — the foundations your calculator needs.
   </p>
 </header>
 
@@ -491,7 +490,7 @@ operator_keys = ["+", "-", "x", "/"]</code></pre>
     <code>key in number_keys</code>. This asks <em>"is the value of
     <code>key</code> somewhere inside the <code>number_keys</code>
     list?"</em> and gives back <code>True</code> or <code>False</code>.
-    You will see it in action in Phase 5 below.
+    You will use it in Session 3 when you write the key-handler function.
   </p>
 
   <!-- STEP: swap experimental variables for real ones -->
@@ -542,177 +541,6 @@ run()</code></pre>
 
 
 <!-- ════════════════════════════════════════════════════════════════════
-     PHASE 5 — def handle_key AND when_key_pressed
-     ════════════════════════════════════════════════════════════════════ -->
-<section>
-  <h2>Phase 5 — Defining a Function and Listening for Key Presses</h2>
-
-  <!-- CONCEPT BOX: def -->
-  <div class="concept-box">
-    <div class="concept-title">&#x1F4A1; New Concept: <code>def</code> — Writing Your Own Function</div>
-    <div class="analogy">
-      <strong>Analogy — a recipe:</strong> a recipe is a set of steps
-      written down once. Whenever you want to make that dish, you just
-      say its name — you do not have to write all the steps out again.
-      In Python, <code>def</code> lets you write a block of steps
-      once, give it a name, and then <em>call</em> that name whenever
-      you want those steps to run.
-    </div>
-    <p>The basic shape of a function definition looks like this:</p>
-<pre><code class="language-python">def my_function():
-    # steps go here, indented by 4 spaces
-    show_result("I ran!")</code></pre>
-    <p>
-      Two important things to notice:
-    </p>
-    <ul>
-      <li>The line starts with <code>def</code>, then the function
-      name, then <strong>round brackets</strong> and a
-      <strong>colon</strong> <code>:</code>.</li>
-      <li>Everything <em>inside</em> the function is indented
-      (pushed in) by 4 spaces. Python uses indentation to know
-      which lines belong to the function.</li>
-    </ul>
-    <p>
-      A function can also <strong>receive information</strong> through
-      its brackets — those are called <em>parameters</em>. In our
-      function, the parameter is called <code>key</code>, which will
-      hold whichever key was pressed:
-    </p>
-<pre><code class="language-python">def handle_key(key):
-    ...</code></pre>
-  </div>
-
-  <!-- CONCEPT BOX: if/elif -->
-  <div class="concept-box">
-    <div class="concept-title">&#x1F4A1; New Concept: <code>if</code> / <code>elif</code> — Making Decisions</div>
-    <div class="analogy">
-      <strong>Analogy — a signpost at a road junction:</strong>
-      imagine a signpost with several arrows. You read the first sign.
-      If it matches where you are going, you follow that road. If not,
-      you read the next sign. <code>if</code> checks the first
-      condition; each <code>elif</code> (short for "else if") checks
-      the next one in turn. Python stops as soon as it finds one that
-      matches.
-    </div>
-<pre><code class="language-python">if condition_one:
-    # do this if condition_one is True
-elif condition_two:
-    # do this if condition_two is True
-elif condition_three:
-    # do this if condition_three is True</code></pre>
-    <p>
-      Each condition is either <code>True</code> or <code>False</code>.
-      The colon and indentation work exactly the same way as with
-      <code>def</code>.
-    </p>
-  </div>
-
-  <!-- handle_key code -->
-  <h3>&#x1F527; Step by Step — Writing <code>handle_key</code></h3>
-  <p>
-    Now type this function into your program, placing it
-    <strong>after</strong> the two list lines and
-    <strong>before</strong> <code>run()</code>:
-  </p>
-
-<pre><code class="language-python">def handle_key(key):
-    if key in number_keys:
-        add_digit(key)
-    elif key in operator_keys:
-        press_operator(key)
-    elif key == "=":
-        press_equals()
-    elif key == "C":
-        press_clear()
-    elif key == "DEL":
-        press_delete()
-    elif key == "+/-":
-        press_negate()</code></pre>
-
-  <p>Let's read through this together, line by line:</p>
-
-  <ol class="steps">
-    <li>
-      <code>def handle_key(key):</code> — defines a function called
-      <code>handle_key</code>. When it runs, Python will put the
-      pressed key's name into the parameter <code>key</code>.
-    </li>
-    <li>
-      <code>if key in number_keys:</code> — checks whether the pressed
-      key is in our digit list (0–9 or the dot). If it is, call
-      <code>add_digit(key)</code>.
-    </li>
-    <li>
-      <code>elif key in operator_keys:</code> — otherwise, is it one
-      of +, &minus;, x, /? If so, call <code>press_operator(key)</code>.
-    </li>
-    <li>
-      The remaining <code>elif</code> branches handle the special keys:
-      <code>=</code>, <code>C</code> (clear), <code>DEL</code>
-      (delete), and <code>+/-</code> (negate / flip sign).
-    </li>
-  </ol>
-
-  <div class="try-it">
-    <strong>&#x2139;&#xFE0F; Don't worry about the missing functions!</strong>
-    <p>Functions like <code>add_digit</code>, <code>press_operator</code>,
-    and the others do <em>not exist yet</em>. That is fine — we are
-    writing a <strong>skeleton</strong> of <code>handle_key</code> now,
-    and we will fill in those functions in Session 3. If you run your
-    program and press a button, you will get an error for now — that is
-    expected.</p>
-  </div>
-
-  <!-- CONCEPT BOX: when_key_pressed -->
-  <div class="concept-box">
-    <div class="concept-title">&#x1F4A1; New Concept: <code>when_key_pressed</code></div>
-    <div class="analogy">
-      <strong>Analogy — a doorbell:</strong> you do not stand at the
-      door all day watching it. Instead, you set up a doorbell: when
-      someone presses the button, the bell rings and you go to the
-      door. <code>when_key_pressed</code> works the same way — you
-      tell Python "whenever a key is pressed, run
-      <code>handle_key</code>". Python then waits quietly until a key
-      is pressed, and calls your function automatically.
-    </div>
-<pre><code class="language-python">when_key_pressed(handle_key)</code></pre>
-    <p>
-      Notice you are passing the <em>name</em> of the function — no
-      brackets after <code>handle_key</code>. You are saying "here is
-      the recipe to use", not "run the recipe right now".
-    </p>
-  </div>
-
-  <h3>&#x1F527; Adding the Final Lines</h3>
-  <p>
-    Directly after the <code>handle_key</code> function, add:
-  </p>
-<pre><code class="language-python">when_key_pressed(handle_key)
-run()</code></pre>
-  <p>
-    <code>run()</code> must <strong>always be the very last line</strong>.
-    It starts the program's event loop — the part that keeps watching
-    for button presses.
-  </p>
-
-  <details>
-    <summary>&#x1F50D; Hint — what is an "event loop"?</summary>
-    <p>
-      An event loop is like a security guard who never goes home.
-      They sit at the door all day and night, waiting for something
-      to happen (a button press, in our case). Every time something
-      happens, they call the right person to deal with it — that is
-      <code>handle_key</code>. Without <code>run()</code>, the program
-      would finish immediately and nothing would happen when you pressed
-      a button.
-    </p>
-  </details>
-
-</section>
-
-
-<!-- ════════════════════════════════════════════════════════════════════
      FULL PROGRAM
      ════════════════════════════════════════════════════════════════════ -->
 <section class="full-program">
@@ -736,21 +564,6 @@ expression_prefix = ""
 number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 operator_keys = ["+", "-", "x", "/"]
 
-def handle_key(key):
-    if key in number_keys:
-        add_digit(key)
-    elif key in operator_keys:
-        press_operator(key)
-    elif key == "=":
-        press_equals()
-    elif key == "C":
-        press_clear()
-    elif key == "DEL":
-        press_delete()
-    elif key == "+/-":
-        press_negate()
-
-when_key_pressed(handle_key)
 run()</code></pre>
 
   <details>
@@ -781,12 +594,10 @@ run()</code></pre>
 <section class="try-it">
   <h2>&#x1F4F1; Try It on the Tab5</h2>
   <p>
-    Run your final program on the Tab5. The bottom display should still
-    show <em>Hello!</em> When you press any key on the calculator you
-    will see an error message — that is perfectly normal at this stage.
-    It means <code>handle_key</code> ran and tried to call
-    <code>add_digit</code> (or another function), but that function
-    does not exist yet. You will write those functions in Session 3!
+    Run your final program on the Tab5. The bottom display should show
+    <em>Hello!</em> — that is all this session's program does on the
+    device. In Session 3 you will write the functions that respond to
+    key presses and bring the calculator to life!
   </p>
 </section>
 
@@ -818,17 +629,9 @@ run()</code></pre>
       brackets. Items are accessed by their index, starting at 0.
     </li>
     <li>
-      <code>def</code> lets you write a <strong>function</strong> once
-      and reuse it by name. Parameters let you pass information in.
-    </li>
-    <li>
-      <code>if</code> / <code>elif</code> lets your program
-      <strong>make decisions</strong> — following different paths
-      depending on what is true.
-    </li>
-    <li>
-      <code>when_key_pressed</code> sets up a <strong>doorbell</strong>:
-      it calls your function automatically each time a key is pressed.
+      The <strong>calculator's state variables</strong> — five named
+      values that keep track of what the user is typing and what
+      the previous number and operator were.
     </li>
   </ul>
 </section>
@@ -848,3 +651,4 @@ run()</code></pre>
 
 </body>
 </html>
+

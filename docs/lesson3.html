@@ -1,207 +1,830 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 3: Making it Calculate — CodeClub Calculator</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session 3: Functions &amp; Key Handling — CodeClub Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 </head>
 <body>
 
-<nav class="lesson-nav">
-  <a href="lesson2.html">&larr; Session 2</a>
-  <span class="lesson-badge">Session 3</span>
-  <a href="lesson4.html">Next &rarr; Session 4</a>
-</nav>
+  <!-- ═══════════════════════════════════════════════════════════ TOP NAV -->
+  <nav class="lesson-nav">
+    <a href="lesson2.html">&larr; Session 2</a>
+    <span class="nav-title">Session 3: Functions &amp; Key Handling</span>
+    <a href="lesson4.html">Session 4 &rarr;</a>
+  </nav>
 
-<main>
-  <h1>Session 3: Making it Calculate</h1>
-  <p>This is the big session — you'll write the four functions that make the calculator actually do maths. By the end, you'll be able to type a sum and see the answer!</p>
+  <main class="lesson-content">
 
-  <!-- ── Concept: global ──────────────────────────────────────────── -->
-  <div class="concept-box">
-    <div class="concept-title">📌 New idea: <code>global</code></div>
-    <div class="analogy">
-      <strong>Think of a shared noticeboard on the classroom wall.</strong>
-      Anyone can read it, but to <em>change</em> what's written on it, you have to walk up to the board.
-      In Python, variables like <code>current_input</code> live on the "noticeboard" (outside any function).
-      If a function wants to <em>change</em> one of them, it must first say <code>global current_input</code> —
-      that's like saying "I'm going to walk up and change the noticeboard".
-    </div>
-    <p>You'll see <code>global</code> at the top of most functions this session. If you forget it, Python thinks you're making a <em>new</em> local variable instead of changing the shared one.</p>
-  </div>
+    <!-- ═══════════════════════════════════════════════════════════ HEADER -->
+    <header class="lesson-header">
+      <div class="session-badge">Session 3 of 4</div>
+      <h1>Functions &amp; Key Handling</h1>
+      <p class="lesson-intro">
+        Last time we built the calculator's memory — variables to keep track of
+        numbers and lists to group the keys together. This session we write our
+        own <strong>functions</strong>: named sets of steps we can run whenever
+        we like. We'll also learn how to make a function choose between
+        different actions, and we'll wire up the key-press handler that will
+        bring the calculator to life in Session 4.
+      </p>
+    </header>
 
-  <!-- ── Concept: float() ─────────────────────────────────────────── -->
-  <div class="concept-box">
-    <div class="concept-title">🔢 New idea: <code>float()</code></div>
-    <div class="analogy">
-      <strong>Imagine a label stuck to a jar that says "12".</strong>
-      The label looks like a number, but you can't do maths with a label.
-      <code>float("12")</code> pulls off the label and gives you a real number: <code>12.0</code>.
-    </div>
-    <p><code>current_input</code> is always stored as a string (text) because it's built up character by character.
-    Before we can do arithmetic we must convert it: <code>float(current_input)</code>.</p>
-  </div>
+    <!-- ═══════════════════════════════════════════════ SESSION GOALS BOX -->
+    <section class="goals-box">
+      <h2>🎯 What you will learn today</h2>
+      <ul>
+        <li>How to write (and call) your own functions with <code>def</code></li>
+        <li>How to pass information <em>into</em> a function with parameters</li>
+        <li>How to get a result <em>back</em> from a function with <code>return</code></li>
+        <li>How to make decisions inside a function with <code>if</code> / <code>elif</code> / <code>else</code></li>
+        <li>The difference between <strong>local</strong> and <strong>global</strong> variables (scope)</li>
+        <li>How to connect <code>handle_key</code> to the calculator with <code>when_key_pressed</code></li>
+      </ul>
+    </section>
 
-  <!-- ── Function: add_digit ──────────────────────────────────────── -->
-  <h2>Function 1: <code>add_digit</code></h2>
-  <p>This runs every time the user taps a digit or the decimal point. It adds the character to <code>current_input</code> and updates the screen.</p>
-  <pre><code class="language-python">def add_digit(key):
-    global current_input, start_new_number
-    if start_new_number:
-        current_input    = ""
-        start_new_number = False
-    if key == "." and "." in current_input:
-        return
-    current_input = current_input + key
-    show_input(current_input)</code></pre>
-  <ul>
-    <li>If <code>start_new_number</code> is <code>True</code>, we wipe the display clean first (the previous answer is no longer needed).</li>
-    <li>The line <code>if key == "." and "." in current_input: return</code> stops you adding two decimal points to the same number.</li>
-    <li><code>current_input = current_input + key</code> adds the new character to the end of what's already there.</li>
-  </ul>
+    <!-- ══════════════════════════════════════════════════════════ RECAP -->
+    <section class="recap-box">
+      <h2>🔁 Quick Recap from Session 2</h2>
+      <p>
+        At the end of Session 2 your program looked like this. It sets up the
+        screen, creates the state variables the calculator will use, and
+        organises the key names into two lists. But it can't <em>do</em>
+        anything when you press a key yet — that's what we fix today.
+      </p>
+      <pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
 
-  <!-- ── The start_new_number flag ────────────────────────────────── -->
-  <div class="concept-box">
-    <div class="concept-title">🚩 Understanding the <code>start_new_number</code> flag</div>
-    <div class="analogy">
-      <strong>Think of it like a "fresh page" sticky note.</strong>
-      Most of the time it's <code>False</code> — we just keep adding digits.
-      When an operator or equals is pressed, we stick the note on: <code>True</code>.
-      The very next digit press sees the note, tears off the old content, and starts fresh.
-    </div>
-  </div>
+setup_screen()
+show_result("Hello!")
 
-  <!-- ── Function: press_operator ─────────────────────────────────── -->
-  <h2>Function 2: <code>press_operator</code></h2>
-  <p>This runs when +, −, x, or / is tapped. It saves the first number and remembers which operator was chosen.</p>
-  <pre><code class="language-python">def press_operator(key):
-    global first_number, operator, start_new_number
-    if current_input != "":
-        first_number = float(current_input)
-    operator         = key
-    start_new_number = True
-    show_input(current_input + " " + operator)</code></pre>
-  <ul>
-    <li>We only update <code>first_number</code> if the user has actually typed something.</li>
-    <li>We store the operator key (e.g. <code>"+"</code>) so <code>calculate()</code> knows what maths to do.</li>
-    <li>Setting <code>start_new_number = True</code> means the next digit press will start a fresh number.</li>
-  </ul>
+current_input     = ""
+first_number      = 0
+operator          = ""
+start_new_number  = False
+expression_prefix = ""
 
-  <!-- ── Function: calculate ──────────────────────────────────────── -->
-  <h2>Function 3: <code>calculate</code></h2>
-  <p>This is the heart of the program. It looks at <code>operator</code> and does the right maths, then <em>returns</em> the answer.</p>
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
 
-  <!-- ── Concept: return ──────────────────────────────────────────── -->
-  <div class="concept-box">
-    <div class="concept-title">↩️ New idea: returning a value</div>
-    <div class="analogy">
-      <strong>Think of asking a friend a question.</strong>
-      You say "what is 3 + 5?" and they hand you back the answer: 8.
-      <code>return result</code> is Python's way of handing back an answer to whoever called the function.
-      <code>return</code> on its own (with no value) means <em>"stop here and go back — something went wrong"</em>.
-    </div>
-  </div>
+run()</code></pre>
+    </section>
 
-  <pre><code class="language-python">def calculate():
-    second_number = float(current_input)
-    if operator == "+":
-        result = first_number + second_number
-    elif operator == "-":
-        result = first_number - second_number
-    elif operator == "x":
-        result = first_number * second_number
-    elif operator == "/":
-        if second_number == 0:
-            return "Error"
-        result = first_number / second_number
-    else:
-        result = second_number
+    <!-- ═══════════════════════════════════════ PHASE 1 — WHAT IS A FUNCTION -->
+    <section class="phase">
+      <h2>Phase 1 — What is a Function?</h2>
+
+      <!-- Concept box: def -->
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">def</span> — Writing Your Own Recipe
+        </div>
+        <div class="analogy">
+          <strong>🍰 Analogy: a recipe book</strong><br />
+          Imagine you write a recipe for chocolate cake. You write it down once,
+          give it a name, and from then on anyone who wants chocolate cake just
+          says "make the chocolate cake recipe". They don't have to re-read all
+          the steps — they just use the name.<br /><br />
+          In Python, <code>def</code> is how you <em>write</em> the recipe.
+          Typing the function's name with brackets <code>()</code> is how you
+          <em>run</em> it.
+        </div>
+      </div>
+
+      <p>
+        Here is the basic shape of a function in Python. Every single part
+        matters, so let's look at each piece:
+      </p>
+
+      <pre><code class="language-python">def function_name(parameter1, parameter2):
+    # everything indented by 4 spaces belongs to the function
+    # do some work here
     return result</code></pre>
-  <ul>
-    <li>Each <code>elif</code> branch handles one operator. Only one branch runs — Python stops checking once it finds a match.</li>
-    <li>Division by zero would crash the program, so we check for it and <code>return "Error"</code> instead.</li>
-    <li>The final <code>return result</code> hands the answer back to <code>press_equals</code>.</li>
-  </ul>
 
-  <!-- ── Function: press_equals ───────────────────────────────────── -->
-  <h2>Function 4: <code>press_equals</code></h2>
-  <p>This glues everything together. It calls <code>calculate()</code>, shows the result, and resets the state ready for the next sum.</p>
-  <pre><code class="language-python">def press_equals():
-    global current_input, first_number, operator, start_new_number
-    if operator == "" or current_input == "":
-        return
-    answer = calculate()
-    if answer == "Error":
-        show_input("")
-        show_result("Error!")
-        current_input    = ""
-        operator         = ""
-        start_new_number = False
-        return
-    if answer == int(answer):
-        answer = int(answer)
-    show_input("")
-    show_result(answer)
-    current_input    = str(answer)
-    first_number     = 0
-    operator         = ""
-    start_new_number = True</code></pre>
-  <ul>
-    <li>The first <code>if</code> checks that there <em>is</em> something to calculate — if not, <code>return</code> exits early.</li>
-    <li><code>if answer == int(answer)</code> removes the <code>.0</code> from whole numbers so <code>10.0</code> shows as <code>10</code>.</li>
-    <li>After showing the result, we store it back into <code>current_input</code> so the user can chain calculations.</li>
-  </ul>
+      <ul>
+        <li><strong><code>def</code></strong> — tells Python "I am writing a function now".</li>
+        <li><strong>The name</strong> — you choose it; use lowercase letters and underscores.</li>
+        <li><strong>Round brackets <code>()</code></strong> — hold the <em>parameters</em> (the ingredients the function needs).</li>
+        <li><strong>The colon <code>:</code></strong> — marks the start of the recipe steps.</li>
+        <li><strong>4 spaces of indentation</strong> — every line that belongs to the function must be indented (shifted right) by 4 spaces. Python uses this to know where the function ends.</li>
+        <li><strong><code>return</code></strong> — hands a result back to whoever called the function, like passing the finished cake through the serving hatch.</li>
+      </ul>
 
-  <!-- ── Where these functions go ─────────────────────────────────── -->
-  <h2>Where to put these functions</h2>
-  <p>Add all four functions <strong>above</strong> <code>handle_key</code> in your file — Python must read a function's definition before <code>handle_key</code> can call it.</p>
+      <!-- ──────────────────────────────────── Example 1: repeat_word -->
+      <h3>Example 1 — A function that displays something</h3>
+      <p>
+        Let's start simple. This function takes a word and a number, then
+        shows the word that many times on screen. It doesn't need to
+        <em>return</em> anything — it just does a job.
+      </p>
 
-  <!-- ── Steps ────────────────────────────────────────────────────── -->
-  <h2>Step by step</h2>
-  <ol class="steps">
-    <li>Find the line <code>def handle_key(key):</code> in your program.</li>
-    <li>Type the <code>add_digit</code> function <em>above</em> it.</li>
-    <li>Type the <code>press_operator</code> function below <code>add_digit</code>.</li>
-    <li>Type the <code>calculate</code> function next.</li>
-    <li>Type the <code>press_equals</code> function after <code>calculate</code>.</li>
-    <li>Press <strong>Run</strong>.</li>
-    <li>Tap: <strong>1</strong>, <strong>2</strong>, <strong>+</strong>, <strong>5</strong>, <strong>=</strong>. You should see <strong>17</strong>!</li>
-  </ol>
+      <pre><code class="language-python">def repeat_word(word, times):
+    show_result(times * word)
 
-  <!-- ── Try It ───────────────────────────────────────────────────── -->
-  <div class="try-it">
-    <h3>🎮 Try it!</h3>
-    <p>After pressing <strong>Run</strong>, try these sums:</p>
-    <ul>
-      <li>7 × 6 = ?</li>
-      <li>100 ÷ 4 = ?</li>
-      <li>1 ÷ 3 = ? (what does the decimal look like?)</li>
-    </ul>
-    <details><summary>💡 Hint</summary>
-      <p>Use the <strong>x</strong> key for multiply and the <strong>/</strong> key for divide.</p>
-    </details>
-  </div>
+repeat_word("hello ", 3)    # shows: hello hello hello
+repeat_word("beep ", 5)     # shows: beep beep beep beep beep</code></pre>
 
-  <!-- ── Challenge ────────────────────────────────────────────────── -->
-  <div class="challenge">
-    <h3>⭐ Challenge</h3>
-    <p>What happens if you press <strong>=</strong> without entering any numbers first? The calculator handles this safely — can you find which line in <code>press_equals</code> does that?</p>
-    <details><summary>💡 Hint</summary>
-      <p>Look for the line that starts with <code>if operator == ""</code>. What does <code>return</code> do there?</p>
-    </details>
-  </div>
+      <p>
+        <strong>Step by step:</strong> when Python reaches
+        <code>repeat_word("hello ", 3)</code>, it jumps inside the function.
+        <code>word</code> gets the value <code>"hello "</code> and
+        <code>times</code> gets the value <code>3</code>. Then
+        <code>3 * "hello "</code> produces the string
+        <code>"hello hello hello "</code>, which <code>show_result</code>
+        puts on screen. Python then comes back out of the function and carries
+        on with the next line.
+      </p>
 
-</main>
+      <div class="try-it">
+        <h4>🔬 Try It</h4>
+        <p>
+          Call <code>repeat_word</code> with your own word and a different
+          number. What happens if you use <code>0</code> as the number? What
+          about <code>1</code>?
+        </p>
+        <details>
+          <summary>💡 Hint</summary>
+          <p>
+            Multiplying a string by <code>0</code> gives an empty string —
+            nothing shows up. Multiplying by <code>1</code> just shows the word
+            once.
+          </p>
+        </details>
+      </div>
 
-<nav class="lesson-nav">
-  <a href="lesson2.html">&larr; Session 2</a>
-  <span class="lesson-badge">Session 3</span>
-  <a href="lesson4.html">Next &rarr; Session 4</a>
-</nav>
+      <!-- ──────────────────────────────────── Example 2: is_even -->
+      <h3>Example 2 — A function that returns <code>True</code> or <code>False</code></h3>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
+      <p>
+        This function checks whether a number is even and <em>returns</em> an
+        answer. Before we look at the code, here is a quick maths reminder:
+      </p>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">%</span> — The Remainder Operator (Modulo)
+        </div>
+        <div class="analogy">
+          <strong>🍕 Analogy: sharing slices of pizza</strong><br />
+          If you have 10 slices and 3 friends, each friend gets 3 slices and
+          you have <strong>1</strong> left over. <code>10 % 3</code> gives you
+          that leftover: <code>1</code>.<br /><br />
+          If a number is even, dividing it by 2 leaves <strong>no</strong>
+          remainder — so <code>num % 2 == 0</code> means "num is even".
+        </div>
+      </div>
+
+      <pre><code class="language-python">def is_even(num):
+    if num % 2 == 0:
+        return True
+    else:
+        return False
+
+show_result(is_even(4))     # True
+show_result(is_even(7))     # False</code></pre>
+
+      <p>
+        Notice: the <code>if</code> and <code>else</code> are indented 4 spaces
+        (inside the function), and the <code>return</code> lines are indented
+        <em>8</em> spaces (inside the <code>if</code>/<code>else</code> block).
+        Python uses those indentation levels to know exactly what belongs where.
+      </p>
+
+      <div class="try-it">
+        <h4>🔬 Try It</h4>
+        <p>
+          What does <code>is_even(100)</code> return? What about
+          <code>is_even(1)</code>? Try a few numbers of your own.
+        </p>
+        <details>
+          <summary>💡 Hint</summary>
+          <p>
+            <code>100 % 2</code> is <code>0</code>, so <code>is_even(100)</code>
+            returns <code>True</code>. <code>1 % 2</code> is <code>1</code>
+            (not zero), so <code>is_even(1)</code> returns <code>False</code>.
+          </p>
+        </details>
+      </div>
+
+      <!-- ──────────────────────────────────── Example 3: celsius_to_fahrenheit -->
+      <h3>Example 3 — A function that does arithmetic</h3>
+      <p>
+        Functions are great for maths that you want to repeat without
+        retyping. This one converts a temperature from Celsius to Fahrenheit.
+      </p>
+
+      <pre><code class="language-python">def celsius_to_fahrenheit(temp):
+    result = temp * 9 / 5 + 32
+    return result
+
+show_result(celsius_to_fahrenheit(0))     # 32.0  — freezing point
+show_result(celsius_to_fahrenheit(100))   # 212.0 — boiling point</code></pre>
+
+      <p>
+        The function stores the answer in a <em>local</em> variable called
+        <code>result</code>, then hands it back with <code>return</code>.
+        <code>show_result</code> receives that value and displays it. (We'll
+        learn much more about local variables in Phase 3.)
+      </p>
+
+      <div class="try-it">
+        <h4>🔬 Try It</h4>
+        <p>
+          Try <code>celsius_to_fahrenheit(37)</code> — that's body temperature.
+          What do you expect? Try <code>celsius_to_fahrenheit(-40)</code> — this
+          one has a famous answer!
+        </p>
+        <details>
+          <summary>💡 Hint</summary>
+          <p>
+            Body temperature comes out as <code>98.6</code>°F. At
+            <code>-40</code> the two scales meet — the answer is also
+            <code>-40</code>!
+          </p>
+        </details>
+      </div>
+
+      <!-- ──────────────────────────────────── Phase 1 Challenge -->
+      <div class="challenge">
+        <h4>🏆 Phase 1 Challenge</h4>
+        <p>
+          Write a function called <code>square</code> that takes one parameter
+          <code>n</code> and returns <code>n * n</code>. Then display
+          <code>square(7)</code> — you should see <code>49</code>.
+        </p>
+        <details>
+          <summary>💡 Hint — stuck on where to start?</summary>
+          <p>Start with this skeleton and fill in the blanks:</p>
+          <pre><code class="language-python">def square(n):
+    result = ___________
+    return result
+
+show_result(square(7))</code></pre>
+        </details>
+        <details>
+          <summary>💡 Hint — full answer</summary>
+          <pre><code class="language-python">def square(n):
+    result = n * n
+    return result
+
+show_result(square(7))    # 49</code></pre>
+        </details>
+      </div>
+
+    </section><!-- /Phase 1 -->
+
+
+    <!-- ══════════════════════════════ PHASE 2 — ROCK PAPER SCISSORS -->
+    <section class="phase">
+      <h2>Phase 2 — Functions that Make Decisions: Rock Paper Scissors</h2>
+
+      <p>
+        Functions become really powerful when they can look at their inputs and
+        take <em>different actions</em> depending on what they find. We already
+        saw a tiny bit of this with <code>is_even</code> — now let's build
+        something bigger: a Rock Paper Scissors referee.
+      </p>
+
+      <!-- Concept box: if/elif/else -->
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">if</span> /
+          <span class="concept-keyword">elif</span> /
+          <span class="concept-keyword">else</span> — Signposts at a Junction
+        </div>
+        <div class="analogy">
+          <strong>🛣️ Analogy: signposts at a road junction</strong><br />
+          Imagine arriving at a crossroads with several signposts. You read the
+          first one — if it matches where you're going, you take that road
+          and <em>ignore</em> all the others. If not, you move on to the next
+          sign. <code>if</code> is the first signpost. <code>elif</code> (short
+          for "else if") is every sign after that. <code>else</code> is the
+          last sign that says "take this road if none of the others matched".
+          Python reads them top to bottom and stops as soon as it finds one
+          that is true.
+        </div>
+      </div>
+
+      <h3>Setting up the hand values</h3>
+      <p>
+        Instead of typing the strings <code>"rock"</code>,
+        <code>"paper"</code>, and <code>"scissors"</code> everywhere (and
+        risking a typo), we give each hand a number:
+      </p>
+
+      <pre><code class="language-python">rock     = 0
+paper    = 1
+scissors = 2</code></pre>
+
+      <p>
+        Now whenever we want to say "rock", we just write the variable name
+        <code>rock</code>. Python can compare numbers quickly with
+        <code>==</code>, and if we ever mistype the variable name Python will
+        tell us immediately with an error — much better than silently using the
+        wrong string.
+      </p>
+
+      <h3>The referee function</h3>
+
+      <pre><code class="language-python">def rock_paper_scissors(hand1, hand2):
+    if hand1 == hand2:
+        show_result("Draw!")
+    elif hand1 == rock and hand2 == scissors:
+        show_result("Player 1 wins!")
+    elif hand1 == paper and hand2 == rock:
+        show_result("Player 1 wins!")
+    elif hand1 == scissors and hand2 == paper:
+        show_result("Player 1 wins!")
+    else:
+        show_result("Player 2 wins!")
+
+rock_paper_scissors(rock, scissors)    # Player 1 wins!
+rock_paper_scissors(paper, paper)      # Draw!
+rock_paper_scissors(scissors, rock)    # Player 2 wins!</code></pre>
+
+      <p>Let's follow Python through <code>rock_paper_scissors(rock, scissors)</code>:</p>
+
+      <ol class="steps">
+        <li>
+          <strong>Check <code>if hand1 == hand2</code></strong> — is
+          <code>rock == scissors</code>? That's <code>0 == 2</code> — false.
+          Move on.
+        </li>
+        <li>
+          <strong>Check first <code>elif</code></strong> — is
+          <code>hand1 == rock and hand2 == scissors</code>? That's
+          <code>0 == 0 and 2 == 2</code> — <strong>true!</strong> Run
+          <code>show_result("Player 1 wins!")</code> and stop checking.
+        </li>
+        <li>
+          The remaining <code>elif</code> and <code>else</code> branches are
+          skipped completely — Python found a match and is done.
+        </li>
+      </ol>
+
+      <div class="try-it">
+        <h4>🔬 Try It</h4>
+        <p>
+          Call <code>rock_paper_scissors</code> with all nine possible
+          combinations: every pair from <code>rock</code>,
+          <code>paper</code>, and <code>scissors</code>. Does it give the
+          right answer every time?
+        </p>
+        <details>
+          <summary>💡 Hint — what are the nine combinations?</summary>
+          <p>
+            There are three draws (rock/rock, paper/paper, scissors/scissors),
+            three Player 1 wins (rock beats scissors, paper beats rock,
+            scissors beats paper), and three Player 2 wins (the opposite three).
+            Nine in total.
+          </p>
+        </details>
+      </div>
+
+      <!-- Phase 2 Challenge -->
+      <div class="challenge">
+        <h4>🏆 Phase 2 Challenge</h4>
+        <p>
+          Notice that there are three separate <code>elif</code> branches that
+          all display <code>"Player 1 wins!"</code>. Can you spot the pattern
+          in the winning pairs? They are
+          <code>(rock, scissors)</code>, <code>(paper, rock)</code>,
+          <code>(scissors, paper)</code>.
+        </p>
+        <p>
+          Could you store those winning pairs in a list of pairs — called
+          <code>p1_wins</code> — and check
+          <code>if (hand1, hand2) in p1_wins</code> instead? Try it! (This
+          is a stretch challenge — don't worry if you don't crack it today.)
+        </p>
+        <details>
+          <summary>💡 Hint — what does a list of pairs look like?</summary>
+          <pre><code class="language-python">p1_wins = [
+    (rock, scissors),
+    (paper, rock),
+    (scissors, paper)
+]</code></pre>
+          <p>
+            A pair written in round brackets is called a
+            <strong>tuple</strong>. You can check if a tuple is inside a list
+            using <code>in</code>, the same way you check if a string is in a
+            list.
+          </p>
+        </details>
+        <details>
+          <summary>💡 Hint — full answer</summary>
+          <pre><code class="language-python">p1_wins = [
+    (rock, scissors),
+    (paper, rock),
+    (scissors, paper)
+]
+
+def rock_paper_scissors(hand1, hand2):
+    if hand1 == hand2:
+        show_result("Draw!")
+    elif (hand1, hand2) in p1_wins:
+        show_result("Player 1 wins!")
+    else:
+        show_result("Player 2 wins!")</code></pre>
+        </details>
+      </div>
+
+    </section><!-- /Phase 2 -->
+
+
+    <!-- ══════════════════════════════════════ PHASE 3 — SCOPE -->
+    <section class="phase">
+      <h2>Phase 3 — Scope: Local vs Global Variables</h2>
+
+      <p>
+        There is one tricky thing about variables and functions that trips
+        people up almost every time. Let's look at it now, before it catches
+        us out in the calculator.
+      </p>
+
+      <!-- Concept box: scope -->
+      <div class="concept-box">
+        <div class="concept-title">
+          Scope — Where Does a Variable Live?
+        </div>
+        <div class="analogy">
+          <strong>📋 Analogy: a shared noticeboard</strong><br />
+          Imagine a noticeboard on the classroom wall that everyone can see —
+          that's a <strong>global</strong> variable. Any part of your program
+          can <em>read</em> what's written on it.<br /><br />
+          But each function also has its own private notepad on its desk —
+          that's a <strong>local</strong> variable. Anything written on that
+          notepad disappears when the function finishes, and nobody outside
+          the function can see it.<br /><br />
+          The catch: if a function wants to <em>change</em> what's written on
+          the shared noticeboard (not just read it), it must explicitly say so
+          using the word <code>global</code>.
+        </div>
+      </div>
+
+      <h3>A broken example — spot the problem</h3>
+      <p>
+        Let's write a Rick-Roll-style function that builds up a famous lyric
+        one phrase at a time. Here is the <strong>broken</strong> version first:
+      </p>
+
+      <pre><code class="language-python">lyric = "never gonna "
+roll  = ["give you up", "let you down", "run around and desert you",
+         "make you cry", "say goodbye", "tell a lie and hurt you"]
+
+def rick(choice):
+    lyric = lyric + choice    # ← this does NOT work
+    show_result(lyric)
+
+rick(roll[0])</code></pre>
+
+      <p>
+        If you run this, Python gives an <code>UnboundLocalError</code>. Here's
+        why: the moment Python sees <code>lyric = ...</code> <em>inside</em>
+        the function, it decides that <code>lyric</code> is a
+        <strong>local</strong> variable — one that belongs only to this
+        function's private notepad. But the right-hand side of that line tries
+        to <em>read</em> <code>lyric</code> before it has been written to the
+        local notepad. Python is confused, and raises an error.
+      </p>
+
+      <h3>The fix — <code>global</code></h3>
+      <p>
+        To tell Python "I want to change the noticeboard — the global variable
+        — not create a local one", add <code>global lyric</code> at the top of
+        the function:
+      </p>
+
+      <pre><code class="language-python">def rick(choice):
+    global lyric              # ← "I want to change the noticeboard"
+    lyric = lyric + choice
+    show_result(lyric)
+
+rick(roll[0])    # never gonna give you up
+rick(roll[1])    # never gonna give you uplet you down</code></pre>
+
+      <p>
+        Notice that the second call shows the full accumulated string — because
+        <code>lyric</code> was genuinely changed on the global noticeboard by
+        the first call, and the second call reads the updated version and adds
+        to it again. State builds up across calls — keep that in mind when
+        you're debugging.
+      </p>
+
+      <p>
+        In the calculator, all of the state variables you wrote in Session 2
+        (<code>current_input</code>, <code>first_number</code>, etc.) are
+        global. Any function that needs to <em>change</em> one of them will
+        need a <code>global</code> declaration. Functions that only
+        <em>read</em> them do not.
+      </p>
+
+      <div class="try-it">
+        <h4>🔬 Try It</h4>
+        <p>
+          Copy the working <code>rick</code> function above. Call it several
+          times with different items from <code>roll</code> and watch
+          <code>lyric</code> grow. Then try removing the
+          <code>global lyric</code> line and run it again — observe the error
+          message.
+        </p>
+        <details>
+          <summary>💡 Hint — which error message should I see?</summary>
+          <p>
+            You should see something like:
+            <code>UnboundLocalError: local variable 'lyric' referenced before assignment</code>.
+            This is Python's way of saying "you're trying to read from the
+            local notepad before writing anything there".
+          </p>
+        </details>
+      </div>
+
+      <!-- Phase 3 Challenge -->
+      <div class="challenge">
+        <h4>🏆 Phase 3 Challenge</h4>
+        <p>
+          Write a function called <code>score_goal()</code> that adds
+          <code>1</code> to a global variable called <code>score</code> each
+          time it is called, then displays the new score. Start with
+          <code>score = 0</code> before the function. Call
+          <code>score_goal()</code> three times — you should see 1, then 2,
+          then 3.
+        </p>
+        <details>
+          <summary>💡 Hint — remember <code>global</code>!</summary>
+          <pre><code class="language-python">score = 0
+
+def score_goal():
+    global score
+    score = score + 1
+    show_result(score)</code></pre>
+        </details>
+      </div>
+
+    </section><!-- /Phase 3 -->
+
+
+    <!-- ══════════════════════════════ PHASE 4 — HANDLE KEY -->
+    <section class="phase">
+      <h2>Phase 4 — Connecting <code>handle_key</code> to the Calculator</h2>
+
+      <p>
+        Now you have all the tools. Let's use them in the calculator. In
+        Session 2 you set up all the state variables and lists — now we add
+        the function that tells the calculator what to do when each key is
+        pressed.
+      </p>
+
+      <!-- Concept box: handle_key -->
+      <div class="concept-box">
+        <div class="concept-title">
+          <code>handle_key</code> — The Calculator's Traffic Controller
+        </div>
+        <div class="analogy">
+          <strong>🚦 Analogy: a traffic controller at a busy junction</strong><br />
+          Every time a driver (a key press) arrives, the controller checks
+          which lane they belong to and sends them the right way. The
+          controller doesn't do the driving — it just decides who goes where.
+          <code>handle_key</code> is exactly that: it checks which key was
+          pressed and calls the right helper function.
+        </div>
+      </div>
+
+      <h3>Writing <code>handle_key</code></h3>
+      <p>
+        This function uses exactly what you practiced in Phase 2 —
+        an <code>if / elif</code> chain that checks the key one condition at a
+        time. There is nothing new here conceptually; it's just applying the
+        same skill in the calculator context.
+      </p>
+
+      <ol class="steps">
+        <li>
+          After your variable and list declarations (but <em>before</em>
+          <code>run()</code>), type the function below. Watch your indentation!
+        </li>
+      </ol>
+
+      <pre><code class="language-python">def handle_key(key):
+    if key in number_keys:
+        add_digit(key)
+    elif key in operator_keys:
+        press_operator(key)
+    elif key == "=":
+        press_equals()
+    elif key == "C":
+        press_clear()
+    elif key == "DEL":
+        press_delete()
+    elif key == "+/-":
+        press_negate()</code></pre>
+
+      <p>Let's read each branch:</p>
+      <ul>
+        <li><strong><code>if key in number_keys</code></strong> — the pressed key is a digit or a decimal point, so call <code>add_digit</code>.</li>
+        <li><strong><code>elif key in operator_keys</code></strong> — it's <code>+</code>, <code>-</code>, <code>x</code>, or <code>/</code>, so call <code>press_operator</code>.</li>
+        <li><strong><code>elif key == "="</code></strong> — the equals key, so call <code>press_equals</code>.</li>
+        <li><strong><code>elif key == "C"</code></strong> — the clear key, so call <code>press_clear</code>.</li>
+        <li><strong><code>elif key == "DEL"</code></strong> — the delete key, so call <code>press_delete</code>.</li>
+        <li><strong><code>elif key == "+/-"</code></strong> — the positive/negative toggle, so call <code>press_negate</code>.</li>
+      </ul>
+
+      <p>
+        Notice that <code>key in number_keys</code> uses the same
+        <code>in</code> keyword you used in Session 2 to check if something is
+        inside a list. You already know this trick — now it's doing real work!
+      </p>
+
+      <p>
+        Each branch calls a <em>helper function</em> — <code>add_digit</code>,
+        <code>press_operator</code>, and so on. Those helper functions don't
+        exist <em>yet</em>. We'll write them in Session 4. For now,
+        <code>handle_key</code> is a skeleton: the structure is there, but the
+        rooms are empty.
+      </p>
+
+      <!-- Concept box: when_key_pressed -->
+      <div class="concept-box">
+        <div class="concept-title">
+          <code>when_key_pressed</code> — The Doorbell
+        </div>
+        <div class="analogy">
+          <strong>🔔 Analogy: a doorbell</strong><br />
+          You don't stand by your front door all day listening for a knock.
+          Instead, you wire up a doorbell — so whenever someone presses it,
+          your phone buzzes and you know to answer. <code>when_key_pressed</code>
+          is that wiring. You give it the name of your function
+          (<code>handle_key</code>) and from then on, every time the player
+          presses a key on the calculator, Python automatically calls
+          <code>handle_key</code> with that key.
+        </div>
+      </div>
+
+      <h3>Registering the doorbell</h3>
+      <p>
+        After the <code>handle_key</code> function, and <em>before</em>
+        <code>run()</code>, add this single line:
+      </p>
+
+      <pre><code class="language-python">when_key_pressed(handle_key)</code></pre>
+
+      <p>
+        Look carefully: there are <strong>no brackets</strong> after
+        <code>handle_key</code>. Why not? Because you are passing the
+        <em>recipe itself</em> to <code>when_key_pressed</code>, not
+        running it right now. If you wrote
+        <code>when_key_pressed(handle_key())</code> with brackets, Python would
+        try to run <code>handle_key</code> immediately — before any key is
+        pressed — which is not what you want.
+      </p>
+
+      <div class="info-box">
+        <h4>⚠️ Expected behaviour when you run it now</h4>
+        <p>
+          If you run the program at the end of this session and press a key,
+          you will see an error message about
+          <code>add_digit</code> or <code>press_operator</code> not being
+          defined. <strong>That is completely fine and expected.</strong> The
+          helper functions don't exist yet — we write them in Session 4. The
+          important thing to check now is that the program starts up without
+          errors and shows "Hello!" on screen.
+        </p>
+      </div>
+
+      <!-- Step-by-step for this phase -->
+      <h3>Steps to type today</h3>
+      <ol class="steps">
+        <li>
+          Open your Session 2 file (the one ending with <code>run()</code>).
+        </li>
+        <li>
+          On the line <em>before</em> <code>run()</code>, add the
+          <code>handle_key</code> function exactly as shown above.
+        </li>
+        <li>
+          On the line <em>after</em> the <code>handle_key</code> function
+          (still before <code>run()</code>), add:
+          <pre><code class="language-python">when_key_pressed(handle_key)</code></pre>
+        </li>
+        <li>
+          Make sure <code>run()</code> is still the very last line.
+        </li>
+        <li>Run the program — you should see "Hello!" and no crash on start-up.</li>
+      </ol>
+
+      <details>
+        <summary>💡 Hint — indentation trouble?</summary>
+        <p>
+          Every line inside <code>handle_key</code> must start with exactly
+          4 spaces. The <code>if</code> line has 4 spaces; the
+          <code>add_digit(key)</code> line below it has 8 spaces (4 for being
+          inside the function, plus 4 for being inside the <code>if</code>).
+          All the <code>elif</code> lines also have 4 spaces.
+        </p>
+      </details>
+
+      <details>
+        <summary>💡 Hint — where exactly does <code>when_key_pressed</code> go?</summary>
+        <p>
+          It should come <em>after</em> the closing line of
+          <code>handle_key</code> and <em>before</em> <code>run()</code>.
+          Both <code>when_key_pressed(handle_key)</code> and
+          <code>run()</code> should have <strong>no</strong> indentation (they
+          are at the left edge of the file, not inside any function).
+        </p>
+      </details>
+
+    </section><!-- /Phase 4 -->
+
+
+    <!-- ═══════════════════════════════ FULL PROGRAM AFTER SESSION 3 -->
+    <section class="full-program">
+      <h2>📄 Your Full Program After Session 3</h2>
+      <p>Your completed file should look exactly like this:</p>
+
+      <pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+setup_screen()
+show_result("Hello!")
+
+current_input     = ""
+first_number      = 0
+operator          = ""
+start_new_number  = False
+expression_prefix = ""
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
+
+def handle_key(key):
+    if key in number_keys:
+        add_digit(key)
+    elif key in operator_keys:
+        press_operator(key)
+    elif key == "=":
+        press_equals()
+    elif key == "C":
+        press_clear()
+    elif key == "DEL":
+        press_delete()
+    elif key == "+/-":
+        press_negate()
+
+when_key_pressed(handle_key)
+run()</code></pre>
+
+      <details>
+        <summary>✅ Checklist — tick these off before moving on</summary>
+        <ul class="checklist">
+          <li>✅ <code>handle_key</code> has all six <code>if</code>/<code>elif</code> branches</li>
+          <li>✅ Each branch body is indented by <strong>8 spaces</strong> (4 for the function + 4 for the branch)</li>
+          <li>✅ All six <code>if</code>/<code>elif</code> keywords are indented by exactly <strong>4 spaces</strong></li>
+          <li>✅ <code>when_key_pressed(handle_key)</code> — <em>no</em> brackets after <code>handle_key</code></li>
+          <li>✅ <code>run()</code> is the very last line of the file</li>
+          <li>✅ The program starts up and shows "Hello!" without crashing</li>
+        </ul>
+      </details>
+    </section>
+
+
+    <!-- ══════════════════════════════════════ WHAT YOU LEARNED TODAY -->
+    <section class="summary-box">
+      <h2>🌟 What You Learned Today</h2>
+      <dl>
+        <dt><code>def</code></dt>
+        <dd>Writes a named function once — a recipe you can run whenever you need it by typing its name with <code>()</code>.</dd>
+
+        <dt>Parameters</dt>
+        <dd>Variables listed in the brackets after the function name. They receive values ("ingredients") when the function is called.</dd>
+
+        <dt><code>return</code></dt>
+        <dd>Hands a result back to whoever called the function. Once Python hits <code>return</code>, it exits the function immediately.</dd>
+
+        <dt><code>if</code> / <code>elif</code> / <code>else</code></dt>
+        <dd>Lets a function make decisions. Python reads the conditions one at a time from top to bottom and runs only the first branch that is true.</dd>
+
+        <dt>Scope — local vs global</dt>
+        <dd>Variables created inside a function are <strong>local</strong> — private to that function. To change a variable that lives outside the function, declare it with <code>global</code> first.</dd>
+
+        <dt><code>when_key_pressed</code></dt>
+        <dd>A "doorbell" that registers your function. Every time a key is pressed on the calculator, Python automatically calls the function you registered — passing in the key that was pressed.</dd>
+      </dl>
+    </section>
+
+  </main><!-- /lesson-content -->
+
+  <!-- ═══════════════════════════════════════════════════════ BOTTOM NAV -->
+  <nav class="lesson-nav lesson-nav--bottom">
+    <a href="lesson2.html">&larr; Session 2: Variables &amp; Lists</a>
+    <a href="index.html">📋 Index</a>
+    <a href="lesson4.html">Session 4: Calculator Maths &rarr;</a>
+  </nav>
+
+  <!-- highlight.js — must come after all <pre><code> blocks -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
 </body>
 </html>
