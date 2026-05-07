@@ -48,7 +48,7 @@ def add_digit(key):
     # If an operator or equals was just pressed, wipe the input and start fresh
     if start_new_number:
         current_input     = ""
-        expression_prefix = ""   # brand-new calculation: reset the display prefix too
+        #expression_prefix = ""   # brand-new calculation: reset the display prefix too
         start_new_number  = False
 
     # Don't allow two decimal points in the same number (e.g. "1.2.3" is invalid)
