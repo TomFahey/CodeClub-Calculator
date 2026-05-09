@@ -7,3 +7,644 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 </head>
+<body>
+
+<!-- ── TOP NAV ─────────────────────────────────────────────────────────── -->
+<nav class="lesson-nav">
+  <a href="lesson1.html">&larr; Session 1</a>
+  <span class="lesson-badge">Session 2</span>
+  <a href="lesson3.html">Session 3 &rarr;</a>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────────────────── -->
+<header class="lesson-hero">
+  <h1>Session 2: Variables &amp; Lists</h1>
+  <p class="subtitle">
+    Store information and organise it into lists — the foundations your calculator needs.
+  </p>
+</header>
+
+<main>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     RECAP
+     ════════════════════════════════════════════════════════════════════ -->
+<section class="recap-box">
+  <h2>&#x1F504; Quick Recap — Session 1</h2>
+  <p>
+    Last time you wrote your very first Python program. You imported
+    functions from <code>calculator_ui</code>, called
+    <code>setup_screen()</code> to start the display, and used
+    <code>show_result("Hello!")</code> to put a message on the screen.
+    You finished with <code>run()</code> so the program kept listening
+    for button presses.
+  </p>
+  <p>
+    Here is the key question for today: what if you want to use the
+    same piece of text — or the same number — in <strong>more than one
+    place</strong>? Typing it out every single time would be really
+    annoying, and if you needed to change it you would have to find
+    every copy. That is exactly the problem <strong>variables</strong>
+    solve.
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     PHASE 1 — STRING VARIABLES
+     ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Phase 1 — Storing Text in Variables</h2>
+
+  <!-- CONCEPT BOX: Variable -->
+  <div class="concept-box">
+    <div class="concept-title">&#x1F4A1; New Concept: Variable</div>
+    <div class="analogy">
+      <strong>Analogy — a labelled box:</strong> imagine a small cardboard
+      box with a sticky label on the outside. You write a name on the label
+      (e.g. <em>input_readout</em>) and put a piece of paper with a value
+      inside the box (e.g. the word "Hello"). Whenever you need that value,
+      you just read the label and open the box. You can also swap the piece
+      of paper for a new one at any time — the label stays the same, but
+      the contents change.
+    </div>
+    <p>
+      In Python, creating a variable looks like this:
+    </p>
+<pre><code class="language-python">box_label = "value inside"</code></pre>
+    <p>
+      The <strong>name</strong> is on the left, the <strong>value</strong>
+      is on the right, and the <code>=</code> sign means "put this value
+      into this box". (It does <em>not</em> mean "is equal to" — that is
+      a common mix-up at first!)
+    </p>
+  </div>
+
+  <!-- STEP-BY-STEP -->
+  <h3>&#x1F527; Step by Step</h3>
+  <p>
+    Open your <code>main.py</code> file. Find the line
+    <code>show_result("Hello!")</code> and the
+    <code>setup_screen()</code> line above it. You are going to add two
+    new variables <strong>before</strong> <code>show_result</code>, and
+    then update <code>show_result</code> itself.
+  </p>
+
+  <ol class="steps">
+    <li>
+      <strong>Add the two variables.</strong>
+      Type these two lines after <code>setup_screen()</code> but
+      before <code>show_result(…)</code>:
+<pre><code class="language-python">input_readout  = "Hello"
+result_readout = "Goodbye"</code></pre>
+      <p>
+        <code>input_readout</code> now holds the text
+        <code>"Hello"</code> and <code>result_readout</code> holds
+        <code>"Goodbye"</code>.
+      </p>
+    </li>
+
+    <li>
+      <strong>Update the display calls.</strong>
+      Replace <code>show_result("Hello!")</code> with these two lines:
+<pre><code class="language-python">show_input(input_readout)
+show_result(result_readout)</code></pre>
+      <p>
+        Instead of typing the text directly, you are passing the
+        <em>variable</em> into the function. Python opens the box,
+        finds the value, and hands it to the function.
+      </p>
+    </li>
+
+    <li>
+      <strong>Run it.</strong>
+      Press <strong>Run</strong> on the Tab5. The top display should
+      show <em>Hello</em> and the bottom display should show
+      <em>Goodbye</em>.
+    </li>
+  </ol>
+
+  <details>
+    <summary>&#x1F50D; Hint — I only see one line of text</summary>
+    <p>
+      Check that you have <em>both</em>
+      <code>show_input(input_readout)</code> <strong>and</strong>
+      <code>show_result(result_readout)</code> in your code.
+      Also make sure <code>show_input</code> is included in your
+      <code>from calculator_ui import …</code> line at the top.
+      It should read:
+    </p>
+<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run</code></pre>
+  </details>
+
+  <!-- TRY IT: string operations -->
+  <div class="try-it">
+    <h3>&#x1F9EA; Try It! — Playing with Text</h3>
+    <p>
+      Try replacing the <code>show_input(input_readout)</code> line
+      with each of the lines below, one at a time. Press <strong>Run
+      </strong> after each change and see what appears on screen.
+      Put your original line back before moving to the next one.
+    </p>
+
+    <p><strong>Gluing two strings together</strong> (called
+    <em>concatenation</em> — just means "joining"):</p>
+<pre><code class="language-python">show_input(input_readout + result_readout)</code></pre>
+    <p>The screen should show <code>HelloGoodbye</code> — no space,
+    because you did not add one.</p>
+
+    <p><strong>Adding a space in the middle:</strong></p>
+<pre><code class="language-python">show_input(input_readout + " " + result_readout)</code></pre>
+    <p>Now it shows <code>Hello Goodbye</code>.</p>
+
+    <p><strong>Repeating a string with <code>*</code>:</strong></p>
+<pre><code class="language-python">show_input(3 * input_readout)</code></pre>
+    <p>This shows <code>HelloHelloHello</code>. The <code>*</code> sign,
+    when used with text, means "repeat this many times".</p>
+
+    <details>
+      <summary>&#x1F50D; Hint — I get an error about a missing quote</summary>
+      <p>
+        Make sure every string has a matching pair of quote marks —
+        one at the start and one at the end. For example:
+        <code>"Hello"</code> not <code>"Hello</code>.
+      </p>
+    </details>
+  </div>
+
+  <!-- Reassignment -->
+  <h3>&#x1F504; Changing What is in the Box</h3>
+  <p>
+    You can put a brand-new value into a variable at any time — just
+    write the label and a new value:
+  </p>
+<pre><code class="language-python">input_readout = "CodeClub"
+show_input(input_readout)</code></pre>
+  <p>
+    The box now contains <code>"CodeClub"</code> instead of
+    <code>"Hello"</code>. The old value is gone — replaced completely.
+  </p>
+
+  <!-- CHALLENGE -->
+  <div class="challenge">
+    <h3>&#x1F3C6; Challenge — Your Name on Screen</h3>
+    <p>
+      Can you make the screen display your <strong>full name</strong>?
+      Store your first name in one variable and your last name in
+      another, then join them together (with a space!) and pass the
+      result to <code>show_input(…)</code>.
+    </p>
+    <details>
+      <summary>&#x1F50D; Hint</summary>
+<pre><code class="language-python">first_name = "Ada"
+last_name  = "Lovelace"
+show_input(first_name + " " + last_name)</code></pre>
+    </details>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     PHASE 2 — NUMERIC VARIABLES
+     ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Phase 2 — Storing Numbers in Variables</h2>
+
+  <!-- CONCEPT BOX -->
+  <div class="concept-box">
+    <div class="concept-title">&#x1F4A1; New Concept: Number Variables</div>
+    <div class="analogy">
+      <strong>Analogy — same box, different contents:</strong> the box
+      (variable) works exactly the same way, but instead of a word
+      written on the paper inside, there is a number. You can do maths
+      on numbers stored in variables — just like you would on a
+      calculator.
+    </div>
+    <p>
+      Notice there are <strong>no quote marks</strong> around a number.
+      Quotes tell Python "this is text". Without quotes, Python knows it
+      is a number it can calculate with.
+    </p>
+  </div>
+
+  <h3>&#x1F527; Step by Step</h3>
+  <p>Add these lines near the top of your program (below
+  <code>setup_screen()</code>):</p>
+<pre><code class="language-python">score = 10
+lives = 3
+show_result(score)</code></pre>
+  <p>Run it — the bottom display should show <code>10</code>.</p>
+
+  <!-- TRY IT: arithmetic -->
+  <div class="try-it">
+    <h3>&#x1F9EA; Try It! — Maths with Variables</h3>
+    <p>
+      Replace the <code>show_result(score)</code> line with each of
+      the following, one at a time. What does each one show?
+    </p>
+
+    <p><strong>Addition:</strong></p>
+<pre><code class="language-python">show_result(score + lives)</code></pre>
+    <p>Shows <code>13</code> — Python adds the two values together.</p>
+
+    <p><strong>Multiplication:</strong></p>
+<pre><code class="language-python">show_result(score * lives)</code></pre>
+    <p>Shows <code>30</code>.</p>
+
+    <p><strong>Subtraction:</strong></p>
+<pre><code class="language-python">show_result(score - lives)</code></pre>
+    <p>Shows <code>7</code>.</p>
+
+    <details>
+      <summary>&#x1F50D; Hint — my screen shows nothing / a blank</summary>
+      <p>
+        Make sure the variable names are spelled the same everywhere —
+        Python is case-sensitive, so <code>Score</code> and
+        <code>score</code> are two completely different names.
+      </p>
+    </details>
+  </div>
+
+  <!-- Type mismatch -->
+  <div class="concept-box">
+    <div class="concept-title">&#x1F4A1; New Concept: Types</div>
+    <div class="analogy">
+      <strong>Analogy — mixing apples and metres:</strong> you cannot
+      sensibly add "3 apples" to "5 metres" — they are different kinds
+      of thing. Python works the same way. Text (which Python calls a
+      <strong>string</strong>, or <code>str</code>) and whole numbers
+      (which Python calls an <strong>integer</strong>, or
+      <code>int</code>) are different <em>types</em>.
+    </div>
+    <p>Try this line and see what error message you get:</p>
+<pre><code class="language-python">show_result(score + input_readout)</code></pre>
+    <p>
+      Python will show a <code>TypeError</code> — it is telling you that
+      you tried to add a number and a word together, which is not
+      allowed. Don't worry — errors are just Python's way of explaining
+      what went wrong so you can fix it.
+    </p>
+  </div>
+
+  <!-- CHALLENGE -->
+  <div class="challenge">
+    <h3>&#x1F3C6; Challenge — No Cheating!</h3>
+    <p>
+      Can you make <code>show_result</code> display the answer to
+      7 &times; 8 <strong>without</strong> typing <code>56</code>
+      directly? Store 7 in one variable and 8 in another, then
+      multiply them.
+    </p>
+    <details>
+      <summary>&#x1F50D; Hint</summary>
+<pre><code class="language-python">a = 7
+b = 8
+show_result(a * b)</code></pre>
+    </details>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     PHASE 3 — LISTS
+     ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Phase 3 — Keeping Things in a List</h2>
+
+  <!-- CONCEPT BOX -->
+  <div class="concept-box">
+    <div class="concept-title">&#x1F4A1; New Concept: List</div>
+    <div class="analogy">
+      <strong>Analogy — a shopping list:</strong> instead of one box
+      holding one thing, a <em>list</em> is like a shopping list where
+      each item is numbered. You can ask for "item number 1" or
+      "item number 3" by its position. In Python, though, the counting
+      starts at <strong>0</strong>, not 1 — so "item number 0" is
+      actually the <em>first</em> item.
+    </div>
+    <p>
+      A list in Python uses <strong>square brackets</strong>
+      <code>[ ]</code> with each item separated by a comma:
+    </p>
+<pre><code class="language-python">fruits = ["apple", "banana", "cherry"]</code></pre>
+    <p>
+      To get one item out, you write the list name followed by its
+      <strong>index</strong> (position number) in square brackets:
+    </p>
+<pre><code class="language-python">show_result(fruits[0])   # shows "apple"
+show_result(fruits[1])   # shows "banana"
+show_result(fruits[2])   # shows "cherry"</code></pre>
+  </div>
+
+  <!-- 0-based indexing visual -->
+  <div class="concept-box">
+    <h4>&#x1F3C1; Why does counting start at 0?</h4>
+    <p>
+      Think of a race podium. The <em>winner's</em> spot is position
+      <strong>0</strong> — right at the front, no steps down. Position
+      1 is one step behind, position 2 is two steps behind. Python
+      works the same way: the very first item is 0 steps away from
+      the start.
+    </p>
+    <table class="index-table">
+      <tr>
+        <th>Index</th>
+        <td>0</td>
+        <td>1</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <th>Value</th>
+        <td>"apple"</td>
+        <td>"banana"</td>
+        <td>"cherry"</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>&#x1F527; Step by Step</h3>
+  <p>Add this to your program and run it:</p>
+<pre><code class="language-python">fruits = ["apple", "banana", "cherry"]
+show_result(fruits[0])</code></pre>
+  <p>The screen should show <code>apple</code>.</p>
+
+  <!-- len() -->
+  <p>
+    Python has a built-in function called <code>len()</code> (short for
+    <em>length</em>) that tells you how many items are in a list:
+  </p>
+<pre><code class="language-python">show_result(len(fruits))</code></pre>
+  <p>This shows <code>3</code> because there are three fruits.</p>
+
+  <!-- TRY IT: index out of range -->
+  <div class="try-it">
+    <h3>&#x1F9EA; Try It! — What If You Go Too Far?</h3>
+    <p>
+      Your list has three items (at positions 0, 1, and 2). What do
+      you think will happen if you ask for position 3?
+    </p>
+<pre><code class="language-python">show_result(fruits[3])</code></pre>
+    <p>
+      Python will show an <strong>IndexError: list index out of
+      range</strong>. It's telling you: "there is no item at position
+      3 — that's past the end of the list!" This is not dangerous — it
+      is just Python being helpful and letting you know before anything
+      goes wrong.
+    </p>
+    <details>
+      <summary>&#x1F50D; Hint — how do I know the last valid index?</summary>
+      <p>
+        The last valid index is always <code>len(list) - 1</code>.
+        For a three-item list, that is <code>3 - 1 = 2</code>.
+      </p>
+    </details>
+  </div>
+
+  <!-- CHALLENGE -->
+  <div class="challenge">
+    <h3>&#x1F3C6; Challenge — Favourite Foods</h3>
+    <p>
+      Create your own list of three favourite foods and use
+      <code>show_result</code> to display the <strong>middle
+      one</strong>.
+    </p>
+    <details>
+      <summary>&#x1F50D; Hint</summary>
+      <p>
+        The middle item in a three-item list is at index
+        <code>1</code> (remember: 0, 1, 2).
+      </p>
+<pre><code class="language-python">foods = ["pizza", "pasta", "pie"]
+show_result(foods[1])</code></pre>
+    </details>
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     PHASE 4 — THE CALCULATOR'S OWN VARIABLES
+     ════════════════════════════════════════════════════════════════════ -->
+<section>
+  <h2>Phase 4 — The Calculator's Own Variables</h2>
+
+  <p>
+    You have practised with your own variables and lists. Now let's look
+    at the ones our <em>calculator</em> actually needs. Every time a
+    button is pressed, the calculator needs to remember certain things.
+    It uses <strong>four variables</strong> for this:
+  </p>
+
+  <table class="var-table">
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>Starting value</th>
+        <th>What it remembers</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>inputs</code></td>
+        <td><code>["",""]</code></td>
+        <td>A list with two empty slots. <code>inputs[0]</code> will hold
+        the first number typed; <code>inputs[1]</code> will hold the second.</td>
+      </tr>
+      <tr>
+        <td><code>selected_input</code></td>
+        <td><code>0</code></td>
+        <td>Which slot the user is currently filling &mdash; <code>0</code>
+        for the first number, <code>1</code> for the second. Switches to
+        <code>1</code> when an operator is pressed.</td>
+      </tr>
+      <tr>
+        <td><code>operator</code></td>
+        <td><code>""</code></td>
+        <td>Which maths symbol was pressed (+, &minus;, x, or /).</td>
+      </tr>
+      <tr>
+        <td><code>stored_answer</code></td>
+        <td><code>None</code></td>
+        <td>The result of the last completed calculation, or
+        <code>None</code> if there is not one yet. Lets you chain
+        calculations without re-typing the previous answer.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    It also needs <strong>two lists</strong> to know which keys belong
+    to which group:
+  </p>
+
+<pre><code class="language-python">number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]</code></pre>
+
+  <p>
+    We will use these lists with a very handy bit of Python:
+    <code>key in number_keys</code>. This asks <em>"is the value of
+    <code>key</code> somewhere inside the <code>number_keys</code>
+    list?"</em> and gives back <code>True</code> or <code>False</code>.
+    You will use it in Session 3 when you write the key-handler function.
+  </p>
+
+  <!-- STEP: swap experimental variables for real ones -->
+  <h3>&#x1F527; Step by Step — Swap In the Real Variables</h3>
+  <p>
+    Remove all the experimental lines from Phases 1–3
+    (the <code>input_readout</code>, <code>result_readout</code>,
+    <code>score</code>, <code>lives</code>, and <code>fruits</code>
+    lines, and any <code>show_input</code> / <code>show_result</code>
+    calls you added for testing). Replace them with the real calculator
+    variables below, keeping <code>setup_screen()</code>,
+    <code>show_result("Hello!")</code>, and <code>run()</code> in place.
+  </p>
+
+<pre><code class="language-python">inputs         = ["",""]
+selected_input = 0
+operator       = ""
+stored_answer  = None
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]</code></pre>
+
+  <details>
+    <summary>&#x1F50D; Hint — where exactly do these lines go?</summary>
+    <p>
+      Place them after <code>show_result("Hello!")</code> and before
+      <code>run()</code>. Your file should now look like this:
+    </p>
+<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+setup_screen()
+show_result("Hello!")
+
+inputs         = ["",""]
+selected_input = 0
+operator       = ""
+stored_answer  = None
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
+
+run()</code></pre>
+  </details>
+
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     FULL PROGRAM
+     ════════════════════════════════════════════════════════════════════ -->
+<section class="full-program">
+  <h2>&#x1F4CB; Your Full Program After Session 2</h2>
+  <p>
+    After removing all the practice lines from Phases 1–3, your
+    <code>main.py</code> should look <strong>exactly</strong> like this:
+  </p>
+
+<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+setup_screen()
+show_result("Hello!")
+
+inputs         = ["",""]
+selected_input = 0
+operator       = ""
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
+
+run()</code></pre>
+
+  <details>
+    <summary>&#x1F50D; Hint — checklist before you finish</summary>
+    <ul>
+      <li>&#x2705; The <code>import</code> line includes
+      <code>show_input</code> and <code>when_key_pressed</code>.</li>
+      <li>&#x2705; <code>setup_screen()</code> is the first function
+      call.</li>
+      <li>&#x2705; All four variables are present with their correct starting values.</li>
+      <li>&#x2705; Both lists are there with the right items in square
+      brackets.</li>
+      <li>&#x2705; <code>handle_key</code> has all six
+      <code>if</code>/<code>elif</code> branches, each indented by
+      4 spaces.</li>
+      <li>&#x2705; <code>when_key_pressed(handle_key)</code> comes
+      before <code>run()</code>.</li>
+      <li>&#x2705; <code>run()</code> is the very last line.</li>
+    </ul>
+  </details>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     TRY IT ON THE DEVICE
+     ════════════════════════════════════════════════════════════════════ -->
+<section class="try-it">
+  <h2>&#x1F4F1; Try It on the Tab5</h2>
+  <p>
+    Run your final program on the Tab5. The bottom display should show
+    <em>Hello!</em> — that is all this session's program does on the
+    device. In Session 3 you will write the functions that respond to
+    key presses and bring the calculator to life!
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════════
+     WHAT YOU LEARNED
+     ════════════════════════════════════════════════════════════════════ -->
+<section class="summary-box">
+  <h2>&#x1F4D6; What You Learned Today</h2>
+  <ul>
+    <li>
+      <strong>Variables</strong> store a value under a name — like a
+      labelled box. You can read the value, use it, and replace it.
+    </li>
+    <li>
+      <strong>Strings</strong> (text) can be joined with <code>+</code>
+      and repeated with <code>*</code>.
+    </li>
+    <li>
+      <strong>Numbers</strong> can be added, subtracted, and multiplied
+      using normal maths symbols.
+    </li>
+    <li>
+      <strong>Types</strong> matter — you cannot mix a string and a
+      number without converting one first.
+    </li>
+    <li>
+      <strong>Lists</strong> hold many values in order, using square
+      brackets. Items are accessed by their index, starting at 0.
+    </li>
+    <li>
+      The <strong>calculator's state variables</strong> — five named
+      values that keep track of what the user is typing and what
+      the previous number and operator were.
+    </li>
+  </ul>
+</section>
+
+</main>
+
+<!-- ── BOTTOM NAV ──────────────────────────────────────────────────────── -->
+<nav class="lesson-nav bottom-nav">
+  <a href="lesson1.html">&larr; Session 1</a>
+  <span class="lesson-badge">Session 2</span>
+  <a href="lesson3.html">Session 3 &rarr;</a>
+</nav>
+
+<!-- ── HIGHLIGHT.JS ───────────────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+</body>
+</html>
+
+
+
+
+

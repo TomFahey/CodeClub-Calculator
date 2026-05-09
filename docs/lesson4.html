@@ -1,63 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Session 4 – The Full Calculator | CodeClub Calculator</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session 4 &mdash; The Full Calculator &#x1F389; | CodeClub Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
 </head>
 <body>
 
-<nav class="lesson-nav">
-  <a href="lesson3.html">&#8592; Session 3</a>
-  <span class="nav-badge">Session 4</span>
-  <span></span>
-</nav>
+  <!-- ═══════════════════════════════════════════════════════════ TOP NAV -->
+  <nav class="lesson-nav">
+    <a href="lesson3.html">&larr; Session 3</a>
+    <span class="nav-title">Session 4: The Full Calculator &#x1F389;</span>
+  </nav>
 
-<main>
+  <main class="lesson-content">
 
-  <h1>Session 4 &ndash; The Full Calculator &#127881;</h1>
+    <!-- ═══════════════════════════════════════════════════════════ HEADER -->
+    <header class="lesson-header">
+      <div class="session-badge">Session 4 of 4</div>
+      <h1>The Full Calculator &#x1F389;</h1>
+      <p class="lesson-intro">
+        This is it &mdash; the final session! Everything we have built over the last three sessions
+        comes together today. We will write the real <code>handle_key</code>, add all the
+        functions that power the calculator, and by the end you will have a fully working
+        calculator running on the Tab5.
+      </p>
+    </header>
 
-  <div class="goals-box">
-    <h2>What you&rsquo;ll build today</h2>
-    <ul>
-      <li>Wire up every button so the calculator <strong>actually works</strong></li>
-      <li>Write <code>add_digit</code> to build up numbers as you type</li>
-      <li>Write <code>press_operator</code> to save which operation to perform</li>
-      <li>Write <code>calculate</code> &mdash; the maths engine that does +, &minus;, &times;, &divide;</li>
-      <li>Write <code>press_equals</code> to display the answer</li>
-      <li>Write <code>press_clear</code>, <code>press_delete</code>, and <code>press_negate</code> to finish the job</li>
-    </ul>
-  </div>
+    <!-- ═══════════════════════════════════════ SESSION GOALS BOX -->
+    <section class="goals-box">
+      <h2>&#x1F3AF; What you will learn today</h2>
+      <ul>
+        <li>Understand <strong>f-strings</strong> for building display text</li>
+        <li>Write <code>add_digit</code> &mdash; building up a number character by character</li>
+        <li>Write <code>press_operator</code> &mdash; switching between first and second number slots</li>
+        <li>Write <code>calculate</code> &mdash; the if/elif maths engine</li>
+        <li>Write <code>press_equals</code> &mdash; the director that calls calculate</li>
+        <li>Write <code>press_clear</code>, <code>press_delete</code>, <code>press_negate</code> &mdash; the finishing touches</li>
+        <li>Have a <strong>fully working calculator!</strong></li>
+      </ul>
+    </section>
 
-  <!-- ═══════════════════════════════════ RECAP ═══ -->
-
-  <section class="recap-box">
-    <h2>Recap &mdash; From Test Code to the Real Thing</h2>
-
-    <p>
-      At the end of Session 3 you had a <strong>temporary</strong> version of
-      <code>handle_key</code> that you used to test your <code>factorial</code> function.
-      It looked something like this:
-    </p>
-
-    <pre><code class="language-python"># Session 3 — temporary handle_key (test version)
-def handle_key(key):
+    <!-- ══════════════════════════════════════════════════════════ RECAP -->
+    <section class="recap-box">
+      <h2>&#x1F501; Quick Recap from Session 3</h2>
+      <p>
+        At the end of Session 3 your <code>handle_key</code> used the
+        <code>factorial</code> function to show a fun result when you pressed a digit.
+        Here is what it looked like:
+      </p>
+      <pre><code class="language-python">def handle_key(key):
     if key in number_keys:
-        show_result(factorial(int(key)))
+        show_result(str(factorial(int(key))))
+    elif key == "C":
+        show_result("0")</code></pre>
 
-when_key_pressed(handle_key)
-run()</code></pre>
+      <p>
+        Today we replace this with the <strong>real</strong> <code>handle_key</code>.
+        Here it is:
+      </p>
 
-    <p>
-      It was useful for testing, but it only did one thing. Today we replace it with the
-      <strong>real</strong> <code>handle_key</code> &mdash; one that calls a proper function
-      for every single button on the calculator:
-    </p>
-
-    <pre><code class="language-python"># Session 4 — the real handle_key
-def handle_key(key):
+      <pre><code class="language-python">def handle_key(key):
+    global inputs, operator
     if key in number_keys:
         add_digit(key)
     elif key in operator_keys:
@@ -70,321 +77,349 @@ def handle_key(key):
         press_delete()
     elif key == "+/-":
         press_negate()
+    show_input(f"{inputs[0]} {operator} {inputs[1]}")</code></pre>
 
-when_key_pressed(handle_key)
-run()</code></pre>
-
-    <p>
-      Each branch of this <code>if/elif</code> chain calls one of the functions you will
-      build today. Here is a quick map of every branch:
-    </p>
-
-    <table class="var-table">
-      <thead>
-        <tr>
-          <th>Key pressed</th>
-          <th>Branch condition</th>
-          <th>Function called</th>
-          <th>What it does</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><kbd>0</kbd>&ndash;<kbd>9</kbd>, <kbd>.</kbd></td>
-          <td><code>key in number_keys</code></td>
-          <td><code>add_digit(key)</code></td>
-          <td>Adds the digit to the display</td>
-        </tr>
-        <tr>
-          <td><kbd>+</kbd> <kbd>-</kbd> <kbd>x</kbd> <kbd>/</kbd></td>
-          <td><code>key in operator_keys</code></td>
-          <td><code>press_operator(key)</code></td>
-          <td>Saves which operation to perform</td>
-        </tr>
-        <tr>
-          <td><kbd>=</kbd></td>
-          <td><code>key == "="</code></td>
-          <td><code>press_equals()</code></td>
-          <td>Works out and shows the answer</td>
-        </tr>
-        <tr>
-          <td><kbd>C</kbd></td>
-          <td><code>key == "C"</code></td>
-          <td><code>press_clear()</code></td>
-          <td>Wipes everything clean</td>
-        </tr>
-        <tr>
-          <td><kbd>DEL</kbd></td>
-          <td><code>key == "DEL"</code></td>
-          <td><code>press_delete()</code></td>
-          <td>Removes the last digit typed</td>
-        </tr>
-        <tr>
-          <td><kbd>+/&minus;</kbd></td>
-          <td><code>key == "+/-"</code></td>
-          <td><code>press_negate()</code></td>
-          <td>Flips the number between positive and negative</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p>
-      By the end of today, <strong>every one of those functions will be written</strong>
-      and your calculator will be fully working. Let&rsquo;s go!
-    </p>
-  </section>
-
-  <!-- ═══════════════════════════════════ PHASE 1 ═══ -->
-
-  <section class="phase">
-    <h2>Phase 1 &mdash; <code>add_digit(key)</code>: Building Up a Number</h2>
-
-    <div class="concept-box">
-      <p class="concept-title">&#127925; Remember <code>rick(choice)</code> from Session 3?</p>
-      <p class="analogy">
-        In Session 3 you wrote a function called <code>rick(choice)</code>. Every time it
-        ran, it added another chunk of a song lyric onto a variable called <code>lyric</code>.
-        By the time you called it three times, <code>lyric</code> had grown from
-        <code>"never gonna "</code> all the way to <code>"never gonna give you up"</code>.
-      </p>
-      <pre><code class="language-python">def rick(choice):
-    global lyric
-    lyric = lyric + choice   # grow the string by one piece</code></pre>
       <p>
-        <code>add_digit</code> works in <em>exactly</em> the same way &mdash; but instead
-        of song lyrics it adds digits to <code>current_input</code>.
-        Press <kbd>4</kbd>, then <kbd>2</kbd>, then <kbd>.</kbd>, then <kbd>5</kbd>, and
-        <code>current_input</code> grows one character at a time:
+        Each key press routes to one of six specialist functions &mdash; then, no matter
+        which branch ran, the very last line updates the display. Here is the full map:
       </p>
-      <pre><code class="language-python">""  →  "4"  →  "42"  →  "42."  →  "42.5"</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Key pressed</th>
+            <th>Condition</th>
+            <th>Function called</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0&ndash;9 or .</td><td><code>key in number_keys</code></td><td><code>add_digit(key)</code></td></tr>
+          <tr><td>+ &minus; x /</td><td><code>key in operator_keys</code></td><td><code>press_operator(key)</code></td></tr>
+          <tr><td>=</td><td><code>key == "="</code></td><td><code>press_equals()</code></td></tr>
+          <tr><td>C</td><td><code>key == "C"</code></td><td><code>press_clear()</code></td></tr>
+          <tr><td>DEL</td><td><code>key == "DEL"</code></td><td><code>press_delete()</code></td></tr>
+          <tr><td>+/&minus;</td><td><code>key == "+/-"</code></td><td><code>press_negate()</code></td></tr>
+        </tbody>
+      </table>
+
       <p>
-        Just like <code>rick</code> needed <code>global lyric</code> to change the variable
-        that lives outside the function, <code>add_digit</code> needs <code>global</code>
-        too &mdash; because it changes <code>current_input</code>.
+        Notice the new line at the very bottom of <code>handle_key</code>:
+        <code>show_input(f"{inputs[0]} {operator} {inputs[1]}")</code>.
+        That runs after <em>every</em> key press, updating the top display line.
+        The <code>f"..."</code> is something new &mdash; let&rsquo;s look at that before we
+        start writing the functions.
       </p>
-    </div>
+    </section>
 
-    <div class="concept-box">
-      <p class="concept-title">&#128678; New concept: a boolean flag</p>
-      <p class="analogy">
-        A <strong>flag</strong> is a variable that can only be <code>True</code> or
-        <code>False</code> &mdash; like a traffic light that is either green or red.
-        The variable <code>start_new_number</code> is the calculator&rsquo;s green/red light.
-        When it is <code>True</code> it means: <em>&ldquo;the next digit you type should
-        start a brand-new number, not be added to the old one.&rdquo;</em>
-      </p>
-      <p>
-        When you press an operator key (like <kbd>+</kbd>) or the equals key,
-        <code>start_new_number</code> is set to <code>True</code> &mdash; red light.
-        As soon as you type the first digit of a new number, <code>add_digit</code>
-        flips it back to <code>False</code> &mdash; green light.
-      </p>
-    </div>
 
-    <h3>The code</h3>
+    <!-- ═══════════════════════════════ F-STRINGS CONCEPT (before Phase 1) -->
+    <section class="phase">
+      <h2>&#x1F3A8; New Concept: f-strings</h2>
 
-    <pre><code class="language-python">def add_digit(key):
-    global current_input, start_new_number, expression_prefix
-
-    if start_new_number:
-        current_input    = ""
-        start_new_number = False
-
-    if key == "." and "." in current_input:
-        return
-
-    current_input = current_input + key
-    show_input(expression_prefix + current_input)</code></pre>
-
-    <h3>Step by step</h3>
-    <ol class="steps">
-      <li>
-        <strong><code>global current_input, start_new_number, expression_prefix</code></strong><br>
-        This function <em>changes</em> all three of those variables, so Python needs to be
-        told they come from outside the function. (You only need <code>global</code> when
-        you <em>write</em> to a variable, not when you just <em>read</em> it.)
-      </li>
-      <li>
-        <strong>The red-light check</strong><br>
-        If <code>start_new_number</code> is <code>True</code>, wipe <code>current_input</code>
-        back to an empty string and flip the flag to <code>False</code>. This makes the next
-        digit start fresh instead of joining the old number.
-      </li>
-      <li>
-        <strong>The decimal-point guard</strong><br>
-        <code>if key == "." and "." in current_input: return</code><br>
-        A number can only have one decimal point. If someone presses <kbd>.</kbd> a second
-        time, we do nothing &mdash; <code>return</code> exits the function early.
-      </li>
-      <li>
-        <strong>Grow the string</strong><br>
-        <code>current_input = current_input + key</code> &mdash; same trick as
-        <code>rick</code>, adding one character to the end each time.
-      </li>
-      <li>
-        <strong>Update the display</strong><br>
-        <code>show_input(expression_prefix + current_input)</code> shows the full
-        expression (for example <code>"7 + 42"</code>) in the top area of the calculator.
-        <code>expression_prefix</code> is set in Phase 2; for now it is an empty string,
-        so the display just shows the digits you&rsquo;ve typed.
-      </li>
-    </ol>
-
-    <div class="try-it">
-      <h3>&#128268; Try It &mdash; typing digits</h3>
-      <p>
-        Run the program on your Tab5. Press <kbd>4</kbd>, <kbd>2</kbd>, <kbd>5</kbd>.
-        The display should show <code>425</code>. Press <kbd>7</kbd> &mdash; it should
-        grow to <code>4257</code>. Press <kbd>.</kbd> twice &mdash; only one dot
-        should appear.
-      </p>
-      <details>
-        <summary>Hint &mdash; the display isn&rsquo;t updating?</summary>
-        <p>
-          Check that <code>add_digit</code> is defined <em>before</em>
-          <code>handle_key</code> in your file. Also make sure your <code>global</code>
-          line lists all three variables:
-          <code>global current_input, start_new_number, expression_prefix</code>.
-        </p>
-      </details>
-      <details>
-        <summary>Hint &mdash; getting a <code>NameError</code>?</summary>
-        <p>
-          Make sure the state variables are declared at the very top of the file,
-          before any function definitions:
-        </p>
-        <pre><code class="language-python">current_input     = ""
-start_new_number  = False
-expression_prefix = ""</code></pre>
-      </details>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════ PHASE 2 ═══ -->
-
-  <section class="phase">
-    <h2>Phase 2 &mdash; <code>press_operator(key)</code>: The Save Point</h2>
-
-    <div class="concept-box">
-      <p class="concept-title">&#128190; Analogy: save points in a game</p>
-      <p class="analogy">
-        Imagine playing a platform game and reaching a checkpoint. The game takes a
-        snapshot of everything &mdash; your score, your position, your lives &mdash; and
-        stores it safely. If you fall off a ledge later, it reloads from that exact snapshot.
-      </p>
-      <p>
-        When you press <kbd>+</kbd> on the calculator, <code>press_operator</code> does
-        the same thing: it saves the number you just typed into <code>first_number</code>,
-        saves which operator you pressed into <code>operator</code>, and sets the
-        <code>start_new_number</code> flag so the next digits you type start a fresh number.
-      </p>
-    </div>
-
-    <h3>The code</h3>
-
-    <pre><code class="language-python">def press_operator(key):
-    global first_number, operator, start_new_number, expression_prefix
-
-    if current_input != "":
-        first_number = float(current_input)
-
-    operator          = key
-    expression_prefix = current_input + " " + key + " "
-    start_new_number  = True
-
-    show_input(expression_prefix)</code></pre>
-
-    <h3>Step by step</h3>
-    <ol class="steps">
-      <li>
-        <strong>Save the first number</strong><br>
-        <code>if current_input != "": first_number = float(current_input)</code><br>
-        We convert the text on screen (e.g. <code>"7"</code>) into a real number with
-        <code>float()</code>. The <code>if</code> guard stops a crash if someone presses
-        an operator before typing any digits.
-      </li>
-      <li>
-        <strong>Remember the operator</strong><br>
-        <code>operator = key</code> saves the key that was pressed &mdash; one of
-        <code>"+"</code>, <code>"-"</code>, <code>"x"</code>, or <code>"/"</code>.
-      </li>
-      <li>
-        <strong>Build the expression prefix</strong><br>
-        <code>expression_prefix = current_input + " " + key + " "</code><br>
-        If you typed <code>7</code> and pressed <kbd>+</kbd>, this becomes
-        <code>"7 + "</code>. From now on every call to <code>add_digit</code> will show
-        this prefix <em>in front of</em> whatever you are currently typing, so the display
-        reads <code>"7 + 3"</code> as you type the second number.
-      </li>
-      <li>
-        <strong>Set the traffic light to red</strong><br>
-        <code>start_new_number = True</code> &mdash; the next digit typed will start a
-        fresh number instead of continuing the old one.
-      </li>
-      <li>
-        <strong>Update the display</strong><br>
-        <code>show_input(expression_prefix)</code> shows e.g. <code>"7 + "</code>, ready
-        for the second number to be typed.
-      </li>
-    </ol>
-
-    <div class="try-it">
-      <h3>&#128268; Try It &mdash; typing an operator</h3>
-      <p>
-        Type <kbd>7</kbd> then <kbd>+</kbd>. The display should show <code>7 + </code>
-        (with a trailing space). Now type <kbd>3</kbd> &mdash; it should show
-        <code>7 + 3</code>. Type <kbd>2</kbd> &mdash; it should grow to
-        <code>7 + 32</code>.
-      </p>
-      <details>
-        <summary>Hint &mdash; the display shows the wrong thing after the operator?</summary>
-        <p>
-          Check that <code>expression_prefix</code> is in the <code>global</code> line of
-          <em>both</em> <code>press_operator</code> (where it is written) and
-          <code>add_digit</code> (where it is read). Both functions need to share the
-          same variable.
-        </p>
-      </details>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════ PHASE 3 ═══ -->
-
-  <section class="phase">
-    <h2>Phase 3 &mdash; <code>calculate()</code>: The Maths Engine</h2>
-
-    <div class="concept-box">
-      <p class="concept-title">&#9986; Remember <code>rock_paper_scissors</code> from Session 3?</p>
-      <p class="analogy">
-        In Session 3 you built <code>rock_paper_scissors(hand1, hand2)</code>. It used a
-        long <code>if/elif/else</code> chain to check what each player had thrown and then
-        decide a winner. The <code>calculate()</code> function is built the
-        <em>exact same way</em>: it checks which operator was saved and then runs the
-        matching sum.
-      </p>
-    </div>
-
-    <div class="side-by-side">
-      <div>
-        <p><strong>Session 3 &mdash; <code>rock_paper_scissors</code></strong></p>
-        <pre><code class="language-python">def rock_paper_scissors(hand1, hand2):
-    if hand1 == hand2:
-        show_result("Draw!")
-    elif hand1 == rock and hand2 == scissors:
-        show_result("Player 1 wins!")
-    elif hand1 == paper and hand2 == rock:
-        show_result("Player 1 wins!")
-    elif hand1 == scissors and hand2 == paper:
-        show_result("Player 1 wins!")
-    else:
-        show_result("Player 2 wins!")</code></pre>
-        <p>Checks a value, does something different for each case.</p>
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">f"..."</span> &mdash; Fill-in-the-Blanks Strings
+        </div>
+        <div class="analogy">
+          <strong>&#x1F4DD; Analogy: a fill-in-the-blanks form</strong><br />
+          Imagine a school letter that says &ldquo;Dear _____, your score was _____.&rdquo;
+          You fill in the name and score and the sentence is complete.
+          An f-string works the same way: you write the sentence once,
+          and anything inside <code>{...}</code> gets filled in automatically.<br /><br />
+          Without f-strings you would have to glue pieces together with <code>+</code>
+          &mdash; and any number would need wrapping in <code>str()</code> first.
+          With f-strings, Python handles all of that for you.
+        </div>
       </div>
-      <div>
-        <p><strong>Session 4 &mdash; <code>calculate</code></strong></p>
-        <pre><code class="language-python">def calculate():
-    second_number = float(current_input)
 
+      <p>Compare the two ways to build the same sentence:</p>
+
+      <pre><code class="language-python"># Old way — concatenation (+ and str())
+name = "Alice"
+age  = 11
+show_result("Hello, " + name + "! You are " + str(age) + " years old.")
+
+# New way — f-string
+show_result(f"Hello, {name}! You are {age} years old.")</code></pre>
+
+      <p>
+        The <code>f</code> before the opening quote makes it an f-string.
+        Anything inside <code>{...}</code> is replaced with the value of that
+        variable or expression. Numbers are converted to strings automatically &mdash;
+        no <code>str()</code> needed.
+      </p>
+
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
+        <p>Try this in the shell &mdash; what do you expect to see?</p>
+        <pre><code class="language-python">x = 7
+y = 3
+show_result(f"{x} + {y} = {x + y}")</code></pre>
+        <details>
+          <summary>&#x1F4A1; Answer</summary>
+          <p>
+            The display shows <strong>7 + 3 = 10</strong>. Notice that
+            <code>{x + y}</code> evaluates the expression first &mdash; you can put
+            any Python expression inside the curly braces.
+          </p>
+        </details>
+      </div>
+
+    </section>
+
+
+    <!-- ═══════════════════════════════════════ PHASE 1 — add_digit -->
+    <section class="phase">
+      <h2>Phase 1 &mdash; <code>add_digit(key)</code>: Building Up a Number</h2>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          Indexing a List with a Variable
+        </div>
+        <div class="analogy">
+          <strong>&#x1F4EC; Analogy: two mailboxes</strong><br />
+          Imagine a row of two mailboxes labelled <strong>0</strong> and
+          <strong>1</strong>. <code>selected_input</code> is the number painted
+          on the door you are currently using. When <code>selected_input</code>
+          is 0, you put letters in box 0. When it is 1, you put them in box 1.
+          The same action &mdash; directed to different places.
+        </div>
+      </div>
+
+      <pre><code class="language-python">inputs = ["", ""]
+selected_input = 0
+
+inputs[selected_input] = "hello"   # same as inputs[0] = "hello"
+show_result(inputs[0])             # shows: hello
+
+selected_input = 1
+inputs[selected_input] = "world"   # same as inputs[1] = "world"
+show_result(inputs[1])             # shows: world
+show_result(inputs[0])             # still shows: hello</code></pre>
+
+      <p>
+        You already know how to use a fixed number like <code>inputs[0]</code>.
+        Now the index itself is a variable. The <em>same code</em> can work on
+        different slots just by changing what <code>selected_input</code> holds.
+      </p>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          <code>selected_input</code> as a Switch
+        </div>
+        <div class="analogy">
+          <strong>&#x1F683; Analogy: a railway track switch</strong><br />
+          When <code>selected_input = 0</code> the track points to slot 0 (the
+          first number). When <code>selected_input = 1</code> the track points
+          to slot 1 (the second number). The same <code>add_digit</code> code
+          runs every time &mdash; but thanks to <code>selected_input</code>, it
+          writes digits to different slots.<br /><br />
+          When does the switch flip? Only in <code>press_operator</code> &mdash;
+          when you press <code>+</code>, <code>&minus;</code>, <code>x</code>,
+          or <code>/</code>.
+        </div>
+      </div>
+
+      <h3>The code</h3>
+
+      <pre><code class="language-python">def add_digit(key):
+    global inputs, selected_input
+    if key == "." and "." in inputs[selected_input]:
+        return
+    else:
+        inputs[selected_input] = inputs[selected_input] + key</code></pre>
+
+      <p>Step by step:</p>
+
+      <ol class="steps">
+        <li>
+          <strong><code>global inputs, selected_input</code></strong> &mdash; both are modified,
+          so we declare them global to be safe.
+        </li>
+        <li>
+          <strong>Decimal guard:</strong> <code>if key == "." and "." in inputs[selected_input]: return</code>
+          &mdash; a number can only have one decimal point. If there is already
+          one in the current slot, we <code>return</code> early (exit the function
+          without doing anything).
+        </li>
+        <li>
+          <strong><code>inputs[selected_input] = inputs[selected_input] + key</code></strong>
+          &mdash; append the new character to whichever slot <code>selected_input</code>
+          is pointing at. Just like the <code>rick</code> function from Session 3
+          that grew a string one piece at a time.
+        </li>
+        <li>
+          <strong>No <code>show_input</code> here</strong> &mdash; <code>handle_key</code>
+          will update the display after this function returns.
+        </li>
+      </ol>
+
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
+        <p>
+          Run the program. Press digit keys <strong>4</strong>, <strong>2</strong>,
+          <strong>5</strong>. The input display at the top should show
+          <code>425&nbsp;&nbsp;</code>. Press <strong>7</strong> &mdash; it should show
+          <code>4257&nbsp;&nbsp;</code>.
+        </p>
+      </div>
+
+      <div class="challenge">
+        <h4>&#x1F3C6; Phase 1 Challenge</h4>
+        <p>
+          What does <code>inputs[selected_input]</code> equal when
+          <code>selected_input == 0</code> and the user has typed
+          <code>"42"</code>? What about when <code>selected_input == 1</code>
+          and they have typed <code>"5"</code>?
+        </p>
+        <details>
+          <summary>&#x1F4A1; Answer</summary>
+          <p>
+            When <code>selected_input == 0</code>:
+            <code>inputs[selected_input]</code> is the same as
+            <code>inputs[0]</code>, which equals <code>"42"</code>.<br />
+            When <code>selected_input == 1</code>:
+            <code>inputs[selected_input]</code> is the same as
+            <code>inputs[1]</code>, which equals <code>"5"</code>.<br />
+            The expression is identical &mdash; only the value of
+            <code>selected_input</code> changes which slot it accesses.
+          </p>
+        </details>
+      </div>
+
+    </section><!-- /Phase 1 -->
+
+
+    <!-- ═══════════════════════════════════════ PHASE 2 — press_operator -->
+    <section class="phase">
+      <h2>Phase 2 &mdash; <code>press_operator(key)</code>: Switching Slots</h2>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          The Save-Point
+        </div>
+        <div class="analogy">
+          <strong>&#x1F3AE; Analogy: a save-point in a video game</strong><br />
+          The moment you press an operator key, the calculator freezes the
+          current state &mdash; like hitting Save in a game. It checks there is
+          something to work with, remembers which operator you chose, and flips
+          the switch so the next digits go into the second slot.
+        </div>
+      </div>
+
+      <h3>The code</h3>
+
+      <pre><code class="language-python">def press_operator(key):
+    global inputs, selected_input, operator, stored_answer
+    if (selected_input == 0):
+        if (inputs[0] == ""):
+            if stored_answer is None:
+                return
+            else:
+                inputs[0] = stored_answer
+        operator = key
+        selected_input = 1</code></pre>
+
+      <p>Step by step:</p>
+
+      <ol class="steps">
+        <li>
+          <strong>Only act if we are still on slot 0</strong> &mdash;
+          <code>if (selected_input == 0)</code>. If the user already pressed an
+          operator (we are on slot 1), pressing another one does nothing.
+        </li>
+        <li>
+          <strong>Check there is something to work with</strong> &mdash;
+          <code>if (inputs[0] == "")</code>: if no digits have been typed yet,
+          check <code>stored_answer</code>. If there is no stored answer
+          (<code>is None</code>), return early. If there <em>is</em> one (from
+          a previous calculation), copy it into <code>inputs[0]</code> so we
+          can chain calculations.
+        </li>
+        <li>
+          <strong><code>operator = key</code></strong> &mdash; remember which
+          symbol was pressed (<code>"+"</code>, <code>"-"</code>,
+          <code>"x"</code>, or <code>"/"</code>).
+        </li>
+        <li>
+          <strong><code>selected_input = 1</code></strong> &mdash; <em>flip the
+          switch</em>. From now on, <code>add_digit</code> writes into
+          <code>inputs[1]</code>.
+        </li>
+        <li>
+          <strong>No <code>show_input</code></strong> &mdash;
+          <code>handle_key</code> handles the display.
+        </li>
+      </ol>
+
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
+        <p>
+          Type <strong>7</strong> then <strong>+</strong>. The display should
+          show <code>7 +&nbsp;&nbsp;</code> (operator visible, slot 1 empty).
+          Type <strong>3</strong> &mdash; it should show <code>7 + 3</code>.
+        </p>
+      </div>
+
+    </section><!-- /Phase 2 -->
+
+
+    <!-- ═══════════════════════════════════════ PHASE 3 — calculate -->
+    <section class="phase">
+      <h2>Phase 3 &mdash; <code>calculate()</code>: The Maths Engine</h2>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          Remember <code>rock_paper_scissors</code> from Session 3?
+        </div>
+        <div class="analogy">
+          Same pattern &mdash; check a value, do something different for each
+          case, return the result. <code>calculate</code> is just the calculator
+          version of the referee function.
+        </div>
+      </div>
+
+      <p>Side by side:</p>
+
+      <pre><code class="language-python"># Session 3 — rock_paper_scissors
+def rock_paper_scissors(hand1, hand2):
+    if hand1 == hand2:
+        return "Draw!"
+    elif hand1 == rock and hand2 == scissors:
+        return "Player 1 wins!"
+    # ... etc
+
+# Session 4 — calculate
+def calculate():
+    first_number  = float(inputs[0])
+    second_number = float(inputs[1])
+    if operator == "+":
+        result = first_number + second_number
+    # ... etc
+    return result</code></pre>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">float()</span> &mdash; Converting a String to a Number
+        </div>
+        <div class="analogy">
+          <strong>&#x1F522; Analogy: reading a number off a piece of paper</strong><br />
+          When you type digits on the keyboard they are stored as text &mdash; the
+          string <code>"42"</code>, not the number <code>42</code>. To do
+          arithmetic, Python needs an actual number. <code>float("42")</code>
+          reads the string and hands back <code>42.0</code>.<br /><br />
+          Try this in the shell to see the difference:
+        </div>
+      </div>
+
+      <pre><code class="language-python">print("42" + "5")                # "425"  — string concatenation!
+print(float("42") + float("5"))  # 47.0   — number addition!</code></pre>
+
+      <h3>The code</h3>
+
+      <pre><code class="language-python">def calculate():
+    first_number  = float(inputs[0])
+    second_number = float(inputs[1])
     if operator == "+":
         result = first_number + second_number
     elif operator == "-":
@@ -397,482 +432,402 @@ expression_prefix = ""</code></pre>
         result = first_number / second_number
     else:
         result = second_number
-
     return result</code></pre>
-        <p>Checks a value, does something different for each case.</p>
-      </div>
-    </div>
 
-    <p>
-      Can you see the pattern? Both functions use an <code>if/elif/else</code> chain to
-      inspect a value and do something different for each possibility. Both also use
-      <code>return</code> to hand back a result to whoever called them.
-    </p>
+      <p>Step by step:</p>
 
-    <h3>Step by step</h3>
-    <ol class="steps">
-      <li>
-        <strong>Read the second number</strong><br>
-        <code>second_number = float(current_input)</code> &mdash; whatever the user
-        typed last is still in <code>current_input</code>. We convert it from text to a
-        real number with <code>float()</code>.
-      </li>
-      <li>
-        <strong>Check the operator and do the maths</strong><br>
-        The <code>if/elif</code> chain inspects the <code>operator</code> variable saved
-        in Phase 2 and runs the right calculation. The button label is <code>"x"</code>
-        for multiplication, but Python&rsquo;s multiply symbol is <code>*</code>, so
-        we translate: <code>result = first_number * second_number</code>.
-      </li>
-      <li>
-        <strong>Divide-by-zero guard &#128737;</strong><br>
-        <code>if second_number == 0: return "Error"</code><br>
-        Dividing by zero is impossible &mdash; even computers cannot do it. If someone
-        types <kbd>5</kbd> <kbd>/</kbd> <kbd>0</kbd> <kbd>=</kbd>, we return the special
-        string <code>"Error"</code> instead of crashing. Returning early like this is
-        called a <strong>guard clause</strong>.
-      </li>
-      <li>
-        <strong>The <code>else</code> branch</strong><br>
-        If somehow no operator was set, we return <code>second_number</code> on its own
-        &mdash; a sensible fall-back that stops a crash.
-      </li>
-      <li>
-        <strong><code>return result</code></strong><br>
-        The function hands back the answer. Remember from Session 3: a function with
-        <code>return</code> is like a machine that produces an output you can catch in
-        a variable &mdash; <code>answer = calculate()</code>.
-      </li>
-    </ol>
+      <ol class="steps">
+        <li>
+          <strong><code>float(inputs[0])</code> and <code>float(inputs[1])</code></strong>
+          &mdash; convert the typed text to real numbers. Note:
+          <code>calculate</code> only <em>reads</em> <code>inputs</code> and
+          <code>operator</code>, so no <code>global</code> declaration is needed!
+        </li>
+        <li>
+          <strong>The <code>if</code>/<code>elif</code> chain</strong> &mdash; same
+          pattern as <code>rock_paper_scissors</code>. Checks <code>operator</code>
+          and runs the matching calculation.
+        </li>
+        <li>
+          <strong>Division-by-zero guard</strong> &mdash; dividing by zero is
+          impossible, even for computers. If someone types <code>5 / 0</code>,
+          we return the string <code>"Error"</code> instead of crashing.
+          This is called a <strong>guard clause</strong> &mdash; an early return
+          that stops a problem before it happens.
+        </li>
+        <li>
+          <strong>The <code>else</code> branch</strong> &mdash; if somehow no
+          operator was set, return <code>second_number</code> as a safe fallback.
+        </li>
+        <li>
+          <strong><code>return result</code></strong> &mdash; hand the answer
+          back to whoever called <code>calculate()</code>.
+        </li>
+      </ol>
 
-    <div class="try-it">
-      <h3>&#128268; Try It &mdash; call <code>calculate()</code> by hand</h3>
-      <p>
-        In the Python shell on your device, set the state variables manually and then
-        call <code>calculate()</code>:
-      </p>
-      <pre><code class="language-python">first_number  = 10
-operator      = "+"
-current_input = "3"
-print(calculate())   # should print 13.0</code></pre>
-      <details>
-        <summary>Hint &mdash; getting a <code>NameError</code> for <code>calculate</code>?</summary>
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
         <p>
-          Make sure the file has been <em>run</em> first so all your functions are loaded
-          into memory. The state variables at the top of the file must also already exist.
+          With the program running, manually set the state in the shell and
+          call <code>calculate()</code>:
         </p>
-      </details>
-      <details>
-        <summary>Hint &mdash; what should dividing by zero do?</summary>
-        <p>Try this in the shell:</p>
-        <pre><code class="language-python">operator      = "/"
-current_input = "0"
-print(calculate())   # should print "Error" — not crash!</code></pre>
-      </details>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════ PHASE 4 ═══ -->
-
-  <section class="phase">
-    <h2>Phase 4 &mdash; <code>press_equals()</code>: The Tournament Director</h2>
-
-    <div class="concept-box">
-      <p class="concept-title">&#127942; Remember <code>tournament</code> from Session 3?</p>
-      <p class="analogy">
-        In Session 3 you wrote a <code>tournament</code> function. It did not do the
-        judging itself &mdash; it called <code>rock_paper_scissors</code> for each round
-        and let <em>that</em> function do the real work.
-        <code>tournament</code> was the <strong>director</strong>;
-        <code>rock_paper_scissors</code> was the <strong>referee</strong>.
-      </p>
-      <p>
-        <code>press_equals</code> works the same way: it is the director that calls
-        <code>calculate</code> to do the actual arithmetic.
-      </p>
-    </div>
-
-    <div class="side-by-side">
-      <div>
-        <p><strong>Session 3 &mdash; <code>tournament</code> calls the referee</strong></p>
-        <pre><code class="language-python">def tournament(p1_moves, p2_moves):
-    number_of_moves = len(player_1_moves)
-    for i in range(number_of_moves):
-        rock_paper_scissors(p1_moves[i], p2_moves[i])</code></pre>
-        <p>
-          The director (<code>tournament</code>) calls the referee
-          (<code>rock_paper_scissors</code>) to do the judging.
-        </p>
+        <pre><code class="language-python">inputs[0] = "10"
+inputs[1] = "4"
+operator = "+"
+print(calculate())   # should print 14.0</code></pre>
       </div>
-      <div>
-        <p><strong>Session 4 &mdash; <code>press_equals</code> calls the maths engine</strong></p>
-        <pre><code class="language-python">def press_equals():
+
+    </section><!-- /Phase 3 -->
+
+
+    <!-- ═══════════════════════════════════════ PHASE 4 — press_equals -->
+    <section class="phase">
+      <h2>Phase 4 &mdash; <code>press_equals()</code>: The Tournament Director</h2>
+
+      <div class="concept-box">
+        <div class="concept-title">
+          Remember <code>tournament</code> from Session 3?
+        </div>
+        <div class="analogy">
+          <code>tournament</code> was the director &mdash; it called
+          <code>rock_paper_scissors</code> (the referee).<br />
+          <code>press_equals</code> is the director &mdash; it calls
+          <code>calculate</code> (the maths engine).<br /><br />
+          <code>press_equals</code> does not do the arithmetic itself. It checks
+          everything is ready, asks <code>calculate</code> for the answer, then
+          handles the result &mdash; showing it, saving it, resetting the state.
+        </div>
+      </div>
+
+      <p>Side by side:</p>
+
+      <pre><code class="language-python"># Session 3
+def tournament(p1_moves, p2_moves):
+    for i in range(len(p1_moves)):
+        rock_paper_scissors(p1_moves[i], p2_moves[i])
+
+# Session 4
+def press_equals():
     ...
-    answer = calculate()
+    answer = calculate()   # call the maths engine
     ...</code></pre>
-        <p>
-          The director (<code>press_equals</code>) calls the maths engine
-          (<code>calculate</code>) to do the arithmetic.
-        </p>
-      </div>
-    </div>
 
-    <h3>The full code</h3>
+      <h3>The code</h3>
 
-    <pre><code class="language-python">def press_equals():
-    global current_input, first_number, operator, start_new_number
-
-    if operator == "" or current_input == "":
+      <pre><code class="language-python">def press_equals():
+    global inputs, selected_input, operator, stored_answer
+    if (operator == "") or (inputs[0] == "") or (inputs[1] == ""):
         return
-
     answer = calculate()
-
     if answer == "Error":
-        show_input("")
+        inputs[0] = ""
+        inputs[1] = ""
+        selected_input = 0
+        operator  = ""
         show_result("Error!")
-        current_input    = ""
-        operator         = ""
-        start_new_number = False
         return
-
     if answer == int(answer):
         answer = int(answer)
-
-    show_input("")
+    inputs[0] = ""
+    inputs[1] = ""
+    selected_input = 0
+    operator  = ""
     show_result(answer)
+    stored_answer = str(answer)</code></pre>
 
-    current_input    = str(answer)
-    first_number     = 0
-    operator         = ""
-    start_new_number = True</code></pre>
+      <p>Step by step:</p>
 
-    <h3>Step by step</h3>
-    <ol class="steps">
-      <li>
-        <strong>Guard clause</strong><br>
-        <code>if operator == "" or current_input == "": return</code><br>
-        If the user presses <kbd>=</kbd> without having typed an operator and a second
-        number, we ignore the press. No crash, no weird result &mdash; just an early
-        return.
-      </li>
-      <li>
-        <strong>Call the maths engine</strong><br>
-        <code>answer = calculate()</code> &mdash; this is the key line. We hand all the
-        real arithmetic to <code>calculate</code> and catch whatever it returns in
-        <code>answer</code>.
-      </li>
-      <li>
-        <strong>Handle errors</strong><br>
-        If <code>calculate</code> returned the string <code>"Error"</code> (because of a
-        divide-by-zero), show <code>"Error!"</code> on screen, reset all the state
-        variables, and <code>return</code> early so we skip the rest of the function.
-      </li>
-      <li>
-        <strong>Remove the trailing <code>.0</code></strong><br>
-        <code>if answer == int(answer): answer = int(answer)</code><br>
-        Python stores results like <code>10 &divide; 2 = 5.0</code>. If the decimal part
-        is zero (it is a whole number), we convert to an integer so the display shows
-        <code>5</code>, not <code>5.0</code>.
-      </li>
-      <li>
-        <strong>Show the result</strong><br>
-        <code>show_input("")</code> clears the expression at the top;
-        <code>show_result(answer)</code> shows the answer in the large result area.
-      </li>
-      <li>
-        <strong>Reset state for the next sum</strong><br>
-        The answer is stored back into <code>current_input</code> as a string, so you can
-        immediately chain another operation (press <kbd>+</kbd><kbd>2</kbd><kbd>=</kbd>
-        to add 2 to the result). <code>operator</code> is cleared and
-        <code>start_new_number</code> is set to <code>True</code> so the next digits
-        start a fresh number.
-      </li>
-    </ol>
+      <ol class="steps">
+        <li>
+          <strong>Guard clause</strong> &mdash; all three must be set:
+          <code>operator</code>, <code>inputs[0]</code>, and
+          <code>inputs[1]</code>. If any are missing, return early without
+          doing anything.
+        </li>
+        <li>
+          <strong>Call the maths engine</strong> &mdash;
+          <code>answer = calculate()</code>. The real arithmetic happens here.
+        </li>
+        <li>
+          <strong>Handle errors</strong> &mdash; if <code>calculate</code>
+          returned <code>"Error"</code> (divide by zero), clear everything and
+          show <code>"Error!"</code> on screen, then return early.
+        </li>
+        <li>
+          <strong>Strip the <code>.0</code></strong> &mdash;
+          <code>if answer == int(answer): answer = int(answer)</code>.
+          Python gives <code>5.0</code> for 10 &divide; 2. If the decimal part
+          is zero, convert to an integer so we display <code>5</code> not
+          <code>5.0</code>.
+        </li>
+        <li>
+          <strong>Reset state</strong> &mdash; clear <code>inputs[0]</code>,
+          <code>inputs[1]</code>, <code>selected_input</code>, and
+          <code>operator</code> back to their starting values.
+        </li>
+        <li>
+          <strong>Show the answer</strong> &mdash; <code>show_result(answer)</code>.
+        </li>
+        <li>
+          <strong>Save for chaining</strong> &mdash;
+          <code>stored_answer = str(answer)</code>. If the user immediately
+          presses an operator after seeing the result,
+          <code>press_operator</code> will find <code>stored_answer</code> and
+          use it as the first number. We store it as a string because
+          <code>inputs[0]</code> is always a string.
+        </li>
+      </ol>
 
-    <div class="try-it">
-      <h3>&#128268; Try It &mdash; your first real calculation!</h3>
-      <p>
-        On your Tab5 type <kbd>9</kbd> <kbd>+</kbd> <kbd>6</kbd> <kbd>=</kbd>. The
-        result area should show <code>15</code>. Try a few more:
-      </p>
-      <ul>
-        <li><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd> <kbd>/</kbd> <kbd>4</kbd> <kbd>=</kbd> &rarr; <code>25</code></li>
-        <li><kbd>7</kbd> <kbd>x</kbd> <kbd>8</kbd> <kbd>=</kbd> &rarr; <code>56</code></li>
-        <li><kbd>9</kbd> <kbd>/</kbd> <kbd>0</kbd> <kbd>=</kbd> &rarr; <code>Error!</code></li>
-      </ul>
-      <details>
-        <summary>Hint &mdash; display shows <code>15.0</code> instead of <code>15</code>?</summary>
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
         <p>
-          Check the line <code>if answer == int(answer): answer = int(answer)</code>.
-          It must be inside <code>press_equals</code>, <em>after</em> the error check
-          and <em>before</em> <code>show_result(answer)</code>.
+          Type <strong>9 + 6 =</strong>. The result area should show
+          <code>15</code>. Now immediately press <strong>+ 4 =</strong>
+          &mdash; it should use 15 as the starting number and show <code>19</code>.
         </p>
-      </details>
-      <details>
-        <summary>Hint &mdash; pressing <kbd>=</kbd> does nothing at all?</summary>
         <p>
-          Make sure you pressed an operator key between the two numbers. If
-          <code>operator</code> is still an empty string, the guard clause at the top of
-          <code>press_equals</code> will return early every time.
+          Also try <strong>9 / 0 =</strong> &mdash; should show
+          <strong>Error!</strong> without crashing.
         </p>
-      </details>
-    </div>
-  </section>
+      </div>
 
-  <!-- ═══════════════════════════════════ PHASE 5 ═══ -->
+    </section><!-- /Phase 4 -->
 
-  <section class="phase">
-    <h2>Phase 5 &mdash; The Finishing Touches</h2>
 
-    <p>
-      The calculator can now add, subtract, multiply, and divide. This phase adds the
-      last three buttons: <strong>C</strong> (clear everything),
-      <strong>DEL</strong> (remove one digit), and
-      <strong>+/&minus;</strong> (flip the sign).
-    </p>
+    <!-- ═══════════════════════════════════════ PHASE 5 — finishing touches -->
+    <section class="phase">
+      <h2>Phase 5 &mdash; The Finishing Touches</h2>
 
-    <!-- ──── press_clear ──── -->
 
-    <h3>5a &mdash; <code>press_clear()</code></h3>
+      <!-- 5a: press_clear -->
+      <h3>5a &mdash; <code>press_clear()</code>: The Reset Button</h3>
 
-    <div class="concept-box">
-      <p class="concept-title">&#128260; Analogy: pressing Reset in a game</p>
-      <p class="analogy">
-        When you press Reset on a game console the whole game goes back to the very
-        beginning &mdash; score back to zero, lives back to three, position back to the
-        start screen. Nothing from the last game is remembered.
-        <code>press_clear</code> does exactly this for the calculator: every variable
-        goes back to its original starting value.
-      </p>
-    </div>
+      <div class="concept-box">
+        <div class="concept-title">
+          <span class="concept-keyword">None</span> &mdash; A Special Python Value
+        </div>
+        <div class="analogy">
+          <strong>&#x1F4ED; Analogy: an empty letter box</strong><br />
+          <code>None</code> means &ldquo;there is nothing here at all&rdquo; &mdash;
+          not <code>0</code> (which is still a number) and not <code>""</code>
+          (which is still a string). It is Python&rsquo;s way of saying &ldquo;this
+          slot has not been filled in yet.&rdquo;<br /><br />
+          We use it for <code>stored_answer</code> because until you have
+          calculated something, there truly is no previous answer &mdash; not
+          even zero. Pressing C also resets <code>stored_answer</code> back to
+          <code>None</code>.
+        </div>
+      </div>
 
-    <pre><code class="language-python">def press_clear():
-    global current_input, first_number, operator, start_new_number, expression_prefix
-
-    current_input     = ""
-    first_number      = 0
-    operator          = ""
-    start_new_number  = False
-    expression_prefix = ""
-
-    show_input("")
+      <pre><code class="language-python">def press_clear():
+    global inputs, selected_input, operator, stored_answer
+    inputs[0]      = ""
+    inputs[1]      = ""
+    selected_input = 0
+    operator       = ""
+    stored_answer  = None
     show_result("0")</code></pre>
 
-    <ol class="steps">
-      <li>
-        Every state variable is set back to the exact value it had at the top of the
-        file when the program first started.
-      </li>
-      <li><code>show_input("")</code> clears the top display area.</li>
-      <li>
-        <code>show_result("0")</code> shows <code>0</code> in the result area &mdash;
-        just like a real calculator after you press <kbd>C</kbd>.
-      </li>
-    </ol>
+      <ol class="steps">
+        <li>
+          Every variable goes back to its starting value from the top of the file.
+        </li>
+        <li>
+          <strong><code>stored_answer = None</code></strong> &mdash; not
+          <code>0</code> or <code>""</code>. <code>None</code> means &ldquo;there
+          is no stored answer at all.&rdquo;
+        </li>
+        <li>
+          <strong><code>show_result("0")</code></strong> &mdash; show <code>0</code>
+          in the result area, just like a real calculator after pressing C.
+        </li>
+        <li>
+          We do not call <code>show_input</code> here &mdash;
+          <code>handle_key</code> will do that via the f-string immediately
+          after, and with all inputs cleared it will show just spaces, effectively
+          clearing it.
+        </li>
+      </ol>
 
-    <!-- ──── press_delete ──── -->
 
-    <h3>5b &mdash; <code>press_delete()</code>: Slicing Off the Last Character</h3>
+      <!-- 5b: press_delete -->
+      <h3>5b &mdash; <code>press_delete()</code>: Slicing Off the Last Character</h3>
 
-    <div class="concept-box">
-      <p class="concept-title">&#9986; New concept: string slicing</p>
-      <p class="analogy">
-        Imagine a word written on a strip of paper. You can cut bits off it. In Python,
-        <strong>slicing</strong> lets you take a portion of a string. You use a colon
-        <code>:</code> inside the square brackets.
-      </p>
-      <p>You already know how to pick one character using an index (from Session 2):</p>
+      <div class="concept-box">
+        <div class="concept-title">
+          String Slicing &mdash; Cutting a String Apart
+        </div>
+        <div class="analogy">
+          <strong>&#x2702;&#xFE0F; Analogy: cutting a strip of paper</strong><br />
+          Imagine a word written on a strip of paper. You can cut off a piece
+          to get a shorter strip. You already know how to pick <em>one</em>
+          character with a single index. Slicing uses a colon to get a
+          <em>range</em> of characters.
+        </div>
+      </div>
+
       <pre><code class="language-python">word = "hello"
-print(word[0])    # "h"  — the first character</code></pre>
-      <p>Slicing uses a colon to grab a <em>range</em> of characters:</p>
-      <pre><code class="language-python">word = "hello"
+print(word[0])    # "h"     — first character
+print(word[4])    # "o"     — last character (index 4)
+
 print(word[1:])   # "ello"  — everything from position 1 to the end
-print(word[:-1])  # "hell"  — everything EXCEPT the last character</code></pre>
+print(word[:-1])  # "hell"  — everything EXCEPT the last character
+print(word[1:3])  # "el"    — positions 1 and 2 (stops before 3)</code></pre>
+
       <p>
-        The <code>[:-1]</code> slice means <em>&ldquo;give me everything up to, but not
-        including, the very last character.&rdquo;</em> That is exactly what
-        <kbd>DEL</kbd> needs to do: chop off the last digit.
+        <code>[:-1]</code> means &ldquo;give me everything up to, but not including,
+        the very last character.&rdquo; Negative indices count backwards from the
+        end: <code>word[-1]</code> is the last character,
+        <code>word[-2]</code> is the second-to-last, and so on. That is exactly
+        what DEL needs: chop off the last digit.
       </p>
-      <p>We also use <code>len()</code> to count how many characters are in a string:</p>
-      <pre><code class="language-python">print(len("hello"))   # 5
-print(len(""))        # 0  — an empty string has length zero</code></pre>
-    </div>
 
-    <pre><code class="language-python">def press_delete():
-    global current_input
-
+      <pre><code class="language-python">def press_delete():
+    global inputs, selected_input, operator
+    current_input = inputs[selected_input]
     if len(current_input) > 0:
-        current_input = current_input[:-1]
+        inputs[selected_input] = current_input[:-1]
+    else:
+        operator       = ""
+        selected_input = 0</code></pre>
 
-    show_input(expression_prefix + current_input)</code></pre>
+      <ol class="steps">
+        <li>
+          <strong><code>current_input = inputs[selected_input]</code></strong>
+          &mdash; a local &ldquo;shortcut&rdquo; variable so we do not have to
+          write <code>inputs[selected_input]</code> repeatedly. This is a
+          <em>local</em> variable &mdash; it only exists inside this function.
+        </li>
+        <li>
+          <strong>If there are characters to delete:</strong> slice off the
+          last one with <code>[:-1]</code>. Pressing DEL on <code>"425"</code>
+          gives <code>"42"</code>, again gives <code>"4"</code>, again gives
+          <code>""</code>.
+        </li>
+        <li>
+          <strong>The <code>else</code> branch</strong> &mdash; if the slot is
+          <em>already</em> empty, we go back a step: clear the operator and
+          flip <code>selected_input</code> back to 0. This lets you undo
+          pressing an operator by mistake!
+        </li>
+        <li>
+          No <code>show_input</code> &mdash; <code>handle_key</code> handles it.
+        </li>
+      </ol>
 
-    <ol class="steps">
-      <li>
-        <strong><code>if len(current_input) &gt; 0</code></strong><br>
-        Only try to delete if there is something there. If <code>current_input</code> is
-        already empty, <code>len</code> returns <code>0</code>, so we skip the slice and
-        avoid an error.
-      </li>
-      <li>
-        <strong><code>current_input = current_input[:-1]</code></strong><br>
-        The <code>[:-1]</code> slice removes the last character. Pressing <kbd>DEL</kbd>
-        on <code>"425"</code> gives <code>"42"</code>; pressing again gives
-        <code>"4"</code>; pressing once more gives <code>""</code>.
-      </li>
-      <li>
-        <strong>Update the display</strong> to show the shortened number.
-      </li>
-    </ol>
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
+        <p>
+          Type <strong>1 2 3</strong>. Press DEL twice &mdash; should show
+          <code>1</code>. Now type <strong>7 +</strong> then DEL &mdash; the
+          operator should disappear, back to just <code>7</code>.
+        </p>
+      </div>
 
-    <!-- ──── press_negate ──── -->
 
-    <h3>5c &mdash; <code>press_negate()</code>: Flipping the Sign</h3>
+      <!-- 5c: press_negate -->
+      <h3>5c &mdash; <code>press_negate()</code>: Flipping the Sign</h3>
 
-    <div class="concept-box">
-      <p class="concept-title">&#10133;&#10134; How to flip positive and negative</p>
-      <p class="analogy">
-        If the number on screen is positive (e.g. <code>"42"</code>), we stick a minus
-        sign on the front to make it <code>"-42"</code>. If it already starts with a
-        minus sign, we peel off that first character to get back to <code>"42"</code>.
-      </p>
-      <p>
-        We use <strong>indexing</strong> (<code>[0]</code>) to peek at the first character
-        &mdash; exactly the same as you did in Session 2 &mdash; and <strong>slicing</strong>
-        (<code>[1:]</code>) to remove it:
-      </p>
-      <pre><code class="language-python">text = "-42"
-print(text[0])    # "-"   — the first character
-print(text[1:])   # "42"  — everything after the first character</code></pre>
-    </div>
+      <div class="concept-box">
+        <div class="concept-title">
+          Checking and Modifying the First Character
+        </div>
+        <div class="analogy">
+          <strong>&#x2795;&#x2796; Analogy: a sign on a number</strong><br />
+          If the number is positive, stick a <code>-</code> on the front to
+          make it negative. If it already starts with <code>-</code>, peel off
+          that first character to make it positive again.<br /><br />
+          We use <code>[0]</code> to check the first character and
+          <code>[1:]</code> to remove it &mdash; both techniques you have now seen!
+        </div>
+      </div>
 
-    <pre><code class="language-python">def press_negate():
-    global current_input
-
+      <pre><code class="language-python">def press_negate():
+    global inputs
+    current_input = inputs[selected_input]
     if current_input == "" or current_input == "0":
         return
-
     if current_input[0] == "-":
-        current_input = current_input[1:]
+        inputs[selected_input] = current_input[1:]
     else:
-        current_input = "-" + current_input
+        inputs[selected_input] = "-" + current_input</code></pre>
 
-    show_input(expression_prefix + current_input)</code></pre>
-
-    <ol class="steps">
-      <li>
-        <strong>Guard clause</strong><br>
-        If <code>current_input</code> is empty or just <code>"0"</code>, do nothing.
-        Negative zero does not mean anything useful, so we return early.
-      </li>
-      <li>
-        <strong>Check the first character with <code>[0]</code></strong><br>
-        <code>if current_input[0] == "-"</code> &mdash; is there already a minus sign
-        at the front?
-      </li>
-      <li>
-        <strong>If yes &mdash; strip the minus with <code>[1:]</code></strong><br>
-        <code>current_input = current_input[1:]</code> gives everything
-        <em>after</em> the first character, which removes the <code>"-"</code>.
-      </li>
-      <li>
-        <strong>If no &mdash; add a minus</strong><br>
-        <code>current_input = "-" + current_input</code> sticks <code>"-"</code> on
-        the very front.
-      </li>
-      <li><strong>Update the display.</strong></li>
-    </ol>
-
-    <div class="try-it">
-      <h3>&#128268; Try It &mdash; finishing touches</h3>
-      <p>Test each new button:</p>
-      <ul>
+      <ol class="steps">
         <li>
-          Type <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd>, then press <kbd>DEL</kbd> twice.
-          The display should show <code>1</code>.
+          <strong><code>current_input = inputs[selected_input]</code></strong>
+          &mdash; the same local alias trick as in <code>press_delete</code>.
         </li>
         <li>
-          Type <kbd>4</kbd><kbd>2</kbd>, then press <kbd>+/&minus;</kbd>. The display
-          should show <code>-42</code>. Press <kbd>+/&minus;</kbd> again &mdash; back
-          to <code>42</code>.
+          <strong>Guard clause:</strong> empty strings or <code>"0"</code>
+          do not need negating &mdash; return early.
         </li>
         <li>
-          Do any calculation, then press <kbd>C</kbd>. Both display areas should clear
-          and the result should show <code>0</code>.
+          <strong><code>current_input[0] == "-"</code></strong> &mdash; check
+          the first character. If negative, use <code>[1:]</code> to strip the
+          <code>-</code> from the front.
         </li>
-      </ul>
-      <details>
-        <summary>Hint &mdash; <kbd>DEL</kbd> seems to delete too many characters?</summary>
+        <li>
+          If positive, prepend <code>"-"</code> with string concatenation.
+        </li>
+        <li>
+          <strong>Important:</strong> we assign to <code>inputs[selected_input]</code>,
+          NOT to <code>current_input</code>. Changing the local alias would
+          <em>not</em> update the list &mdash; we must assign back to the actual
+          slot.
+        </li>
+      </ol>
+
+      <div class="try-it">
+        <h4>&#x1F52C; Try It</h4>
         <p>
-          Check that <code>expression_prefix</code> is <strong>not</strong> listed on
-          the <code>global</code> line of <code>press_delete</code>. That function only
-          <em>reads</em> <code>expression_prefix</code> (in the last
-          <code>show_input</code> call), so it does not need to declare it global.
+          Type <strong>42</strong>, press <strong>+/&minus;</strong> &mdash;
+          display shows <code>-42</code>. Press again &mdash; back to
+          <code>42</code>. Try after pressing an operator too:
+          <strong>5 + 3 +/&minus;</strong> should show <code>5 + -3</code>.
         </p>
-      </details>
-      <details>
-        <summary>Hint &mdash; <kbd>+/&minus;</kbd> does not work after pressing <kbd>=</kbd>?</summary>
-        <p>
-          After <kbd>=</kbd>, the answer is stored back into <code>current_input</code>
-          and <code>start_new_number</code> is <code>True</code>. Press
-          <kbd>+/&minus;</kbd> <em>before</em> typing a new digit and it will negate
-          the answer. If you type a digit first, <code>add_digit</code> will have
-          already wiped <code>current_input</code> clean.
-        </p>
-      </details>
-    </div>
-  </section>
+      </div>
 
-  <!-- ═══════════════════════════════════ FULL LISTING ═══ -->
-
-  <section class="full-program">
-    <h2>The Complete Program</h2>
-    <p>
-      Here is every line of <code>main.py</code> in one place. Check yours matches
-      exactly &mdash; every indent, every colon, every quote mark.
-    </p>
-
-    <pre><code class="language-python"># ── Session 2: state variables ────────────────────────────────────────────────
-current_input     = ""
-first_number      = 0
-operator          = ""
-start_new_number  = False
-expression_prefix = ""
-
-number_keys   = ["0","1","2","3","4","5","6","7","8","9","."]
-operator_keys = ["+","-","x","/"]
+    </section><!-- /Phase 5 -->
 
 
-# ── Session 3 ─────────────────────────────────────────────────────────────────
+    <!-- ═══════════════════════════════════════ FULL PROGRAM -->
+    <section class="phase">
+      <h2>&#x1F4C4; The Complete Program &mdash; check yours matches exactly!</h2>
+
+      <pre class="full-program"><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run
+
+setup_screen()
+show_result("Hello!")
+
+inputs         = ["",""]   # the two numbers input by the user, as strings
+selected_input = 0         # which input number the user is currently typing (0: LHS, 1: RHS)
+operator       = ""        # which operator was pressed: "+", "-", "x", or "/"
+stored_answer  = None      # the answer to the previous calculation, or None if there isn't one yet
+
+number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+operator_keys = ["+", "-", "x", "/"]
+
 def add_digit(key):
-    global current_input, start_new_number, expression_prefix
-
-    if start_new_number:
-        current_input    = ""
-        start_new_number = False
-
-    if key == "." and "." in current_input:
+    global inputs, selected_input
+    if key == "." and "." in inputs[selected_input]:
         return
-
-    current_input = current_input + key
-    show_input(expression_prefix + current_input)
-
+    else:
+        inputs[selected_input] = inputs[selected_input] + key
 
 def press_operator(key):
-    global first_number, operator, start_new_number, expression_prefix
-
-    if current_input != "":
-        first_number = float(current_input)
-
-    operator          = key
-    expression_prefix = current_input + " " + key + " "
-    start_new_number  = True
-
-    show_input(expression_prefix)
-
+    global inputs, selected_input, operator, stored_answer
+    if (selected_input == 0):
+        if (inputs[0] == ""):
+            if stored_answer is None:
+                return
+            else:
+                inputs[0] = stored_answer
+        operator = key
+        selected_input = 1
 
 def calculate():
-    second_number = float(current_input)
-
+    first_number  = float(inputs[0])
+    second_number = float(inputs[1])
     if operator == "+":
         result = first_number + second_number
     elif operator == "-":
@@ -885,77 +840,59 @@ def calculate():
         result = first_number / second_number
     else:
         result = second_number
-
     return result
 
-
 def press_equals():
-    global current_input, first_number, operator, start_new_number
-
-    if operator == "" or current_input == "":
+    global inputs, selected_input, operator, stored_answer
+    if (operator == "") or (inputs[0] == "") or (inputs[1] == ""):
         return
-
     answer = calculate()
-
     if answer == "Error":
-        show_input("")
+        inputs[0] = ""
+        inputs[1] = ""
+        selected_input = 0
+        operator  = ""
         show_result("Error!")
-        current_input    = ""
-        operator         = ""
-        start_new_number = False
         return
-
     if answer == int(answer):
         answer = int(answer)
-
-    show_input("")
+    inputs[0] = ""
+    inputs[1] = ""
+    selected_input = 0
+    operator  = ""
     show_result(answer)
+    stored_answer = str(answer)
 
-    current_input    = str(answer)
-    first_number     = 0
-    operator         = ""
-    start_new_number = True
-
-
-# ── Session 4 ─────────────────────────────────────────────────────────────────
 def press_clear():
-    global current_input, first_number, operator, start_new_number, expression_prefix
-
-    current_input     = ""
-    first_number      = 0
-    operator          = ""
-    start_new_number  = False
-    expression_prefix = ""
-
-    show_input("")
+    global inputs, selected_input, operator, stored_answer
+    inputs[0]      = ""
+    inputs[1]      = ""
+    selected_input = 0
+    operator       = ""
+    stored_answer  = None
     show_result("0")
 
-
 def press_delete():
-    global current_input
-
+    global inputs, selected_input, operator
+    current_input = inputs[selected_input]
     if len(current_input) > 0:
-        current_input = current_input[:-1]
-
-    show_input(expression_prefix + current_input)
-
+        inputs[selected_input] = current_input[:-1]
+    else:
+        operator       = ""
+        selected_input = 0
 
 def press_negate():
-    global current_input
-
+    global inputs
+    current_input = inputs[selected_input]
     if current_input == "" or current_input == "0":
         return
-
     if current_input[0] == "-":
-        current_input = current_input[1:]
+        inputs[selected_input] = current_input[1:]
     else:
-        current_input = "-" + current_input
+        inputs[selected_input] = "-" + current_input
 
-    show_input(expression_prefix + current_input)
-
-
-# ── handle_key (final version — replaces the lesson 3 temporary one) ──────────
 def handle_key(key):
+    global inputs, operator
     if key in number_keys:
         add_digit(key)
     elif key in operator_keys:
@@ -968,169 +905,120 @@ def handle_key(key):
         press_delete()
     elif key == "+/-":
         press_negate()
+    show_input(f"{inputs[0]} {operator} {inputs[1]}")
 
 when_key_pressed(handle_key)
 run()</code></pre>
-  </section>
 
-  <!-- ═══════════════════════════════════ CHALLENGE ═══ -->
+      <details>
+        <summary>&#x2705; Checklist &mdash; tick these off!</summary>
+        <ul class="checklist">
+          <li>&#x2705; <code>add_digit</code> appends to <code>inputs[selected_input]</code>, not a local <code>current_input</code></li>
+          <li>&#x2705; <code>press_operator</code> flips <code>selected_input</code> from 0 to 1, does NOT call <code>show_input</code></li>
+          <li>&#x2705; <code>calculate</code> reads <code>inputs[0]</code> and <code>inputs[1]</code> via <code>float()</code></li>
+          <li>&#x2705; <code>press_equals</code> resets all slots and saves <code>stored_answer</code></li>
+          <li>&#x2705; <code>handle_key</code> has <code>show_input(f"...")</code> at the very bottom (runs after every key)</li>
+          <li>&#x2705; <code>when_key_pressed(handle_key)</code> &mdash; no brackets after <code>handle_key</code></li>
+          <li>&#x2705; <code>run()</code> is the very last line</li>
+        </ul>
+      </details>
 
-  <section class="challenge">
-    <h2>&#11088; Stretch Goal &mdash; <code>press_percent()</code></h2>
+      <h3>Final Test Sequence</h3>
 
-    <p>
-      A real calculator has a <kbd>%</kbd> key that divides the current number by 100.
-      Typing <kbd>5</kbd><kbd>0</kbd><kbd>%</kbd> should give <code>0.5</code>.
-      Can you write <code>press_percent()</code>?
-    </p>
-    <p>
-      You will also need to add a new branch inside <code>handle_key</code>:
-    </p>
-    <pre><code class="language-python">    elif key == "%":
-        press_percent()</code></pre>
+      <p>Try all of these to confirm everything works:</p>
 
-    <details>
-      <summary>&#128161; Conceptual hint &mdash; where to start</summary>
-      <p><code>press_percent</code> needs to:</p>
-      <ol>
-        <li>Check that <code>current_input</code> is not empty.</li>
-        <li>Convert <code>current_input</code> to a number with <code>float()</code>.</li>
-        <li>Divide that number by <code>100</code>.</li>
-        <li>Store the result back into <code>current_input</code> as a string using <code>str()</code>.</li>
-        <li>Update the display with <code>show_input</code>.</li>
-      </ol>
-      <p>
-        Look at how <code>press_negate</code> reads <code>current_input</code>, changes
-        it, and writes it back &mdash; <code>press_percent</code> follows the same
-        pattern.
-      </p>
-    </details>
+      <ul>
+        <li>Press <strong>9 + 6 =</strong> &rarr; shows <code>15</code></li>
+        <li>Then <strong>+ 4 =</strong> &rarr; shows <code>19</code> (chained!)</li>
+        <li>Press <strong>7 x 8 =</strong> &rarr; shows <code>56</code></li>
+        <li>Press <strong>1 0 0 / 4 =</strong> &rarr; shows <code>25</code></li>
+        <li>Press <strong>9 / 0 =</strong> &rarr; shows <strong>Error!</strong></li>
+        <li>Press <strong>4 2 DEL</strong> &rarr; shows <code>4</code></li>
+        <li>Press <strong>5 +/&minus;</strong> &rarr; shows <code>-5</code></li>
+        <li>Press <strong>C</strong> &rarr; result shows <code>0</code>, input clears</li>
+      </ul>
 
-    <details>
-      <summary>&#128275; Full solution</summary>
-      <pre><code class="language-python">def press_percent():
-    global current_input
+    </section>
 
-    if current_input == "":
-        return
 
-    value         = float(current_input) / 100
-    current_input = str(value)
+    <!-- ═══════════════════════════════════════ SUMMARY -->
+    <section class="summary-box">
+      <h2>&#x1F4DA; What You Learned Today</h2>
+      <dl>
+        <dt>f-strings</dt>
+        <dd>
+          Embed any value directly inside a string with <code>{...}</code> &mdash;
+          no <code>str()</code> needed. The <code>f</code> before the opening
+          quote makes it an f-string.
+        </dd>
 
-    show_input(expression_prefix + current_input)</code></pre>
-    </details>
-  </section>
+        <dt>Indexing with a variable</dt>
+        <dd>
+          <code>inputs[selected_input]</code> &mdash; the same code can work on
+          different slots depending on what <code>selected_input</code> holds.
+        </dd>
 
-  <!-- ═══════════════════════════════════ CELEBRATION ═══ -->
+        <dt><code>selected_input</code> as a switch</dt>
+        <dd>
+          Starts at 0 (typing the first number), flips to 1 when an operator
+          is pressed (typing the second number), resets to 0 after equals or
+          clear.
+        </dd>
 
-  <section class="summary-box">
-    <h2>&#127881; You&rsquo;ve Built a Calculator!</h2>
+        <dt><code>stored_answer</code></dt>
+        <dd>
+          Remembers the last result so you can chain calculations &mdash; press
+          an operator immediately after seeing a result, and it uses that
+          result as the first number.
+        </dd>
 
-    <p>
-      Four sessions ago you had a blank screen. Now you have a
-      <strong>real, working calculator</strong> running on your own device.
-      That is genuinely impressive &mdash; well done!
-    </p>
+        <dt>Guard clauses</dt>
+        <dd>
+          Return early to skip bad inputs without crashing. Used in
+          <code>press_operator</code>, <code>press_equals</code>, and
+          <code>press_negate</code>.
+        </dd>
 
-    <p>Here is a summary of every concept you have learned across all four sessions:</p>
+        <dt>String slicing</dt>
+        <dd>
+          <code>[:-1]</code> removes the last character;
+          <code>[1:]</code> removes the first;
+          <code>[1:3]</code> gives characters at positions 1 and 2.
+          Negative indices count backwards from the end.
+        </dd>
 
-    <table class="var-table">
-      <thead>
-        <tr>
-          <th>Session</th>
-          <th>Concept</th>
-          <th>What it means in plain English</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Running Python on a device</td>
-          <td>Writing code in a file and pressing Run to execute it on real hardware</td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td><code>show_input()</code> and <code>show_result()</code></td>
-          <td>Calling built-in functions to put text on the calculator&rsquo;s display</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Variables</td>
-          <td>Named boxes that store values your program needs to remember</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Lists and indexing (<code>[0]</code>, <code>[1]</code>, &hellip;)</td>
-          <td>Ordered collections of items; pick one out using its position number</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td><code>if / elif / else</code></td>
-          <td>Making decisions &mdash; doing different things depending on what is true</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Defining functions (<code>def</code>)</td>
-          <td>Giving a reusable block of code a name you can call whenever you need it</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Parameters and <code>return</code></td>
-          <td>Functions can receive inputs and hand back outputs to whoever called them</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Scope and <code>global</code></td>
-          <td>Variables inside a function are separate from the rest; use <code>global</code> to share one</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Functions calling other functions</td>
-          <td>One function can call another to split a big job into small, manageable pieces</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Boolean flags (<code>True</code> / <code>False</code>)</td>
-          <td>A variable used as a green/red traffic light to control what happens next</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>String slicing (<code>[:-1]</code>, <code>[1:]</code>)</td>
-          <td>Cutting a portion out of a string using the colon syntax inside square brackets</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td><code>len()</code></td>
-          <td>Counts the number of characters in a string (or items in a list)</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Guard clauses</td>
-          <td>An early <code>return</code> that skips the rest of a function when conditions are not right</td>
-        </tr>
-      </tbody>
-    </table>
+        <dt><code>float()</code></dt>
+        <dd>
+          Converts a typed string like <code>"42"</code> into the real number
+          <code>42.0</code> so you can do arithmetic with it.
+        </dd>
 
-    <div class="info-box">
-      <p>
-        &#128172; <strong>What next?</strong> You now know enough Python to start building
-        your own programs from scratch. Some ideas: a quiz game, a times-tables tester,
-        a simple text adventure, or an upgraded calculator that remembers its history.
-        The skills are yours &mdash; go build something!
-      </p>
-    </div>
-  </section>
+        <dt><code>None</code></dt>
+        <dd>
+          A special Python value meaning &ldquo;nothing here yet&rdquo; &mdash;
+          different from <code>0</code> (a valid number) or <code>""</code>
+          (an empty string).
+        </dd>
 
-</main>
+        <dt>Centralised display</dt>
+        <dd>
+          <code>handle_key</code> calls <code>show_input</code> once, at the
+          very end, for every key press. Individual functions stay focused on
+          their own job and do not touch the display.
+        </dd>
+      </dl>
+    </section>
 
-<nav class="lesson-nav">
-  <a href="lesson3.html">&#8592; Session 3</a>
-  <span class="nav-badge">Session 4</span>
-  <span></span>
-</nav>
+  </main><!-- /lesson-content -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
+  <!-- ══════════════════════════════════════════════════ BOTTOM NAV -->
+  <nav class="lesson-nav">
+    <a href="lesson3.html">&larr; Session 3</a>
+    <span class="nav-title">Session 4: The Full Calculator &#x1F389;</span>
+  </nav>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
 
 </body>
 </html>

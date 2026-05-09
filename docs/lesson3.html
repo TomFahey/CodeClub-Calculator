@@ -62,11 +62,10 @@
 setup_screen()
 show_result("Hello!")
 
-current_input     = ""
-first_number      = 0
-operator          = ""
-start_new_number  = False
-expression_prefix = ""
+inputs         = ["",""]
+selected_input = 0
+operator       = ""
+stored_answer  = None
 
 number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 operator_keys = ["+", "-", "x", "/"]
@@ -517,7 +516,7 @@ rick(roll[1])    # never gonna give you uplet you down</code></pre>
 
       <p>
         In the calculator, all of the state variables you wrote in Session 2
-        (<code>current_input</code>, <code>first_number</code>, etc.) are
+        (<code>inputs</code>, <code>selected_input</code>, etc.) are
         global. Any function that needs to <em>change</em> one of them will
         need a <code>global</code> declaration. Functions that only
         <em>read</em> them do not.
@@ -1045,11 +1044,10 @@ show_result(factorial(0))    # 1</code></pre>
 setup_screen()
 show_result("Hello!")
 
-current_input     = ""
-first_number      = 0
-operator          = ""
-start_new_number  = False
-expression_prefix = ""
+inputs         = ["",""]
+selected_input = 0
+operator       = ""
+stored_answer  = None
 
 number_keys   = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
 operator_keys = ["+", "-", "x", "/"]
