@@ -34,7 +34,6 @@
     <section class="goals-box">
       <h2>&#x1F3AF; What you will learn today</h2>
       <ul>
-        <li>Understand <strong>f-strings</strong> for building display text</li>
         <li>Write <code>add_digit</code> &mdash; building up a number character by character</li>
         <li>Write <code>press_operator</code> &mdash; switching between first and second number slots</li>
         <li>Write <code>calculate</code> &mdash; the if/elif maths engine</li>
@@ -106,65 +105,11 @@
         Notice the new line at the very bottom of <code>handle_key</code>:
         <code>show_input(f"{inputs[0]} {operator} {inputs[1]}")</code>.
         That runs after <em>every</em> key press, updating the top display line.
-        The <code>f"..."</code> is something new &mdash; let&rsquo;s look at that before we
-        start writing the functions.
+        You already learned about f-strings in Session 2 &mdash; the
+        <code>{inputs[0]}</code>, <code>{operator}</code> and
+        <code>{inputs[1]}</code> inside the curly brackets are filled in
+        automatically with whatever those variables currently hold.
       </p>
-    </section>
-
-
-    <!-- ═══════════════════════════════ F-STRINGS CONCEPT (before Phase 1) -->
-    <section class="phase">
-      <h2>&#x1F3A8; New Concept: f-strings</h2>
-
-      <div class="concept-box">
-        <div class="concept-title">
-          <span class="concept-keyword">f"..."</span> &mdash; Fill-in-the-Blanks Strings
-        </div>
-        <div class="analogy">
-          <strong>&#x1F4DD; Analogy: a fill-in-the-blanks form</strong><br />
-          Imagine a school letter that says &ldquo;Dear _____, your score was _____.&rdquo;
-          You fill in the name and score and the sentence is complete.
-          An f-string works the same way: you write the sentence once,
-          and anything inside <code>{...}</code> gets filled in automatically.<br /><br />
-          Without f-strings you would have to glue pieces together with <code>+</code>
-          &mdash; and any number would need wrapping in <code>str()</code> first.
-          With f-strings, Python handles all of that for you.
-        </div>
-      </div>
-
-      <p>Compare the two ways to build the same sentence:</p>
-
-      <pre><code class="language-python"># Old way — concatenation (+ and str())
-name = "Alice"
-age  = 11
-show_result("Hello, " + name + "! You are " + str(age) + " years old.")
-
-# New way — f-string
-show_result(f"Hello, {name}! You are {age} years old.")</code></pre>
-
-      <p>
-        The <code>f</code> before the opening quote makes it an f-string.
-        Anything inside <code>{...}</code> is replaced with the value of that
-        variable or expression. Numbers are converted to strings automatically &mdash;
-        no <code>str()</code> needed.
-      </p>
-
-      <div class="try-it">
-        <h4>&#x1F52C; Try It</h4>
-        <p>Try this in the shell &mdash; what do you expect to see?</p>
-        <pre><code class="language-python">x = 7
-y = 3
-show_result(f"{x} + {y} = {x + y}")</code></pre>
-        <details>
-          <summary>&#x1F4A1; Answer</summary>
-          <p>
-            The display shows <strong>7 + 3 = 10</strong>. Notice that
-            <code>{x + y}</code> evaluates the expression first &mdash; you can put
-            any Python expression inside the curly braces.
-          </p>
-        </details>
-      </div>
-
     </section>
 
 
@@ -945,13 +890,6 @@ run()</code></pre>
     <section class="summary-box">
       <h2>&#x1F4DA; What You Learned Today</h2>
       <dl>
-        <dt>f-strings</dt>
-        <dd>
-          Embed any value directly inside a string with <code>{...}</code> &mdash;
-          no <code>str()</code> needed. The <code>f</code> before the opening
-          quote makes it an f-string.
-        </dd>
-
         <dt>Indexing with a variable</dt>
         <dd>
           <code>inputs[selected_input]</code> &mdash; the same code can work on

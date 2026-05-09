@@ -62,8 +62,8 @@
     <div class="analogy">
       <strong>Analogy — a labelled box:</strong> imagine a small cardboard
       box with a sticky label on the outside. You write a name on the label
-      (e.g. <em>input_readout</em>) and put a piece of paper with a value
-      inside the box (e.g. the word "Hello"). Whenever you need that value,
+      (e.g. <em>word</em>) and put a piece of paper with a value inside the
+      box (e.g. the word "bird"). Whenever you need that value,
       you just read the label and open the box. You can also swap the piece
       of paper for a new one at any time — the label stays the same, but
       the contents change.
@@ -80,125 +80,154 @@
     </p>
   </div>
 
+  <p>
+    Imagine you wanted to show the same word many times on screen. Typing it
+    out every single time would be really annoying, and if you needed to change
+    it you would have to find every copy. That is exactly the problem variables
+    solve.
+  </p>
+
+  <!-- CONCEPT BOX: f-strings -->
+  <div class="concept-box">
+    <div class="concept-title">&#x1F4A1; New Concept: f-strings</div>
+    <div class="analogy">
+      <strong>Analogy — a fill-in-the-blanks letter:</strong> imagine a letter
+      that says "Dear _____, please bring _____ to school." You fill in the
+      blanks and the sentence is complete. An f-string works the same way:
+      write the sentence once, and anything inside <code>{curly brackets}</code>
+      gets filled in automatically with the variable's value.
+    </div>
+    <p>
+      To make an f-string, put the letter <code>f</code> directly before the
+      opening quote mark. Then, anywhere inside the string, wrap a variable name
+      in <code>{...}</code> and Python will swap it for the actual value:
+    </p>
+<pre><code class="language-python">word = "bird"
+show_result(f"The word is {word}")</code></pre>
+    <p>
+      The display shows <strong>The word is bird</strong>. Change
+      <code>word</code> to something else and every <code>{word}</code> in
+      every f-string updates automatically — you only ever change
+      <em>one line</em>.
+    </p>
+  </div>
+
   <!-- STEP-BY-STEP -->
   <h3>&#x1F527; Step by Step</h3>
   <p>
-    Open your <code>main.py</code> file. Find the line
-    <code>show_result("Hello!")</code> and the
-    <code>setup_screen()</code> line above it. You are going to add two
-    new variables <strong>before</strong> <code>show_result</code>, and
-    then update <code>show_result</code> itself.
+    Open your <code>main.py</code> file. Add these lines after
+    <code>setup_screen()</code>:
   </p>
 
   <ol class="steps">
     <li>
-      <strong>Add the two variables.</strong>
-      Type these two lines after <code>setup_screen()</code> but
-      before <code>show_result(…)</code>:
-<pre><code class="language-python">input_readout  = "Hello"
-result_readout = "Goodbye"</code></pre>
+      <strong>Create the variable.</strong>
+<pre><code class="language-python">word = "bird"</code></pre>
       <p>
-        <code>input_readout</code> now holds the text
-        <code>"Hello"</code> and <code>result_readout</code> holds
-        <code>"Goodbye"</code>.
+        The box labelled <code>word</code> now contains the text
+        <code>"bird"</code>.
       </p>
     </li>
 
     <li>
-      <strong>Update the display calls.</strong>
-      Replace <code>show_result("Hello!")</code> with these two lines:
-<pre><code class="language-python">show_input(input_readout)
-show_result(result_readout)</code></pre>
+      <strong>Display it with f-strings.</strong>
+<pre><code class="language-python">show_input(f"A well a {word}, {word}, {word}, the {word} is the word")
+show_result(f"A well a {word}, {word}, {word}, the {word} is the word")</code></pre>
       <p>
-        Instead of typing the text directly, you are passing the
-        <em>variable</em> into the function. Python opens the box,
-        finds the value, and hands it to the function.
+        Notice the <code>f</code> right before the quote, and
+        <code>{word}</code> appearing four times inside the string.
+        Each <code>{word}</code> is a blank that Python fills in.
       </p>
     </li>
 
     <li>
       <strong>Run it.</strong>
-      Press <strong>Run</strong> on the Tab5. The top display should
-      show <em>Hello</em> and the bottom display should show
-      <em>Goodbye</em>.
+      Press <strong>Run</strong> on the Tab5. Both displays should show
+      <em>A well a bird, bird, bird, the bird is the word</em>.
     </li>
   </ol>
 
   <details>
-    <summary>&#x1F50D; Hint — I only see one line of text</summary>
+    <summary>&#x1F50D; Hint — I see curly brackets on screen instead of the word</summary>
     <p>
-      Check that you have <em>both</em>
-      <code>show_input(input_readout)</code> <strong>and</strong>
-      <code>show_result(result_readout)</code> in your code.
-      Also make sure <code>show_input</code> is included in your
-      <code>from calculator_ui import …</code> line at the top.
-      It should read:
+      Check that you have the <code>f</code> immediately before the opening
+      quote — <code>f"..."</code> not <code>"..."</code>. Without the
+      <code>f</code> Python treats it as a plain string and shows the
+      curly brackets literally.
     </p>
-<pre><code class="language-python">from calculator_ui import setup_screen, show_input, show_result, when_key_pressed, run</code></pre>
   </details>
 
-  <!-- TRY IT: string operations -->
-  <div class="try-it">
-    <h3>&#x1F9EA; Try It! — Playing with Text</h3>
+  <!-- CHALLENGE: dee -->
+  <div class="challenge">
+    <h3>&#x1F3C6; Challenge — Change One Line, Fix Everything</h3>
     <p>
-      Try replacing the <code>show_input(input_readout)</code> line
-      with each of the lines below, one at a time. Press <strong>Run
-      </strong> after each change and see what appears on screen.
-      Put your original line back before moving to the next one.
+      Change <strong>only</strong> the line that sets <code>word</code>:
+    </p>
+<pre><code class="language-python">word = "dee"</code></pre>
+    <p>
+      Run it again. Both displays should now say
+      <em>A well a dee, dee, dee, the dee is the word</em>.
+      You changed <strong>one</strong> line and every copy updated.
+      That is the whole point of variables!
+    </p>
+  </div>
+
+  <!-- TRY IT: concatenation and repetition -->
+  <div class="try-it">
+    <h3>&#x1F9EA; Try It! — Joining and Repeating Strings</h3>
+    <p>
+      Let's explore two things you can do with text variables.
+      Add these lines to your program and run it:
+    </p>
+<pre><code class="language-python">a = "papa"
+b = "ooma"
+c = "mow"
+d = a + b + c
+
+show_input(d)
+show_result(2 * d)</code></pre>
+    <p>
+      The <code>+</code> sign <strong>joins</strong> strings together (this is
+      called <em>concatenation</em> — just a fancy word for joining).
+      The <code>*</code> sign <strong>repeats</strong> a string that many times.
     </p>
 
-    <p><strong>Gluing two strings together</strong> (called
-    <em>concatenation</em> — just means "joining"):</p>
-<pre><code class="language-python">show_input(input_readout + result_readout)</code></pre>
-    <p>The screen should show <code>HelloGoodbye</code> — no space,
-    because you did not add one.</p>
-
-    <p><strong>Adding a space in the middle:</strong></p>
-<pre><code class="language-python">show_input(input_readout + " " + result_readout)</code></pre>
-    <p>Now it shows <code>Hello Goodbye</code>.</p>
-
-    <p><strong>Repeating a string with <code>*</code>:</strong></p>
-<pre><code class="language-python">show_input(3 * input_readout)</code></pre>
-    <p>This shows <code>HelloHelloHello</code>. The <code>*</code> sign,
-    when used with text, means "repeat this many times".</p>
+    <details>
+      <summary>&#x1F4A1; Answer</summary>
+      <p>
+        The top display shows <strong>papaoomamow</strong>.<br />
+        The bottom display shows <strong>papaoomamowpapaoomamow</strong>
+        (the whole thing twice).
+      </p>
+    </details>
 
     <details>
-      <summary>&#x1F50D; Hint — I get an error about a missing quote</summary>
+      <summary>&#x1F50D; Hint — can I add spaces between the words?</summary>
       <p>
-        Make sure every string has a matching pair of quote marks —
-        one at the start and one at the end. For example:
-        <code>"Hello"</code> not <code>"Hello</code>.
+        Yes! Try changing the <code>d</code> line to:
+      </p>
+<pre><code class="language-python">d = a + " " + b + " " + c</code></pre>
+      <p>
+        That glues a space string between each word. You can also use an
+        f-string: <code>f"{a} {b} {c}"</code> — the spaces inside
+        the curly braces gaps do the same job.
       </p>
     </details>
   </div>
 
-  <!-- Reassignment -->
-  <h3>&#x1F504; Changing What is in the Box</h3>
-  <p>
-    You can put a brand-new value into a variable at any time — just
-    write the label and a new value:
-  </p>
-<pre><code class="language-python">input_readout = "CodeClub"
-show_input(input_readout)</code></pre>
-  <p>
-    The box now contains <code>"CodeClub"</code> instead of
-    <code>"Hello"</code>. The old value is gone — replaced completely.
-  </p>
-
-  <!-- CHALLENGE -->
+  <!-- CHALLENGE: your name -->
   <div class="challenge">
     <h3>&#x1F3C6; Challenge — Your Name on Screen</h3>
     <p>
-      Can you make the screen display your <strong>full name</strong>?
-      Store your first name in one variable and your last name in
-      another, then join them together (with a space!) and pass the
-      result to <code>show_input(…)</code>.
+      Can you make the screen display your <strong>full name</strong> using
+      an f-string? Store your first name in one variable and your last name
+      in another, then use an f-string to show them together.
     </p>
     <details>
       <summary>&#x1F50D; Hint</summary>
 <pre><code class="language-python">first_name = "Ada"
 last_name  = "Lovelace"
-show_input(first_name + " " + last_name)</code></pre>
+show_input(f"My name is {first_name} {last_name}")</code></pre>
     </details>
   </div>
 
@@ -278,7 +307,7 @@ show_result(score)</code></pre>
       <code>int</code>) are different <em>types</em>.
     </div>
     <p>Try this line and see what error message you get:</p>
-<pre><code class="language-python">show_result(score + input_readout)</code></pre>
+<pre><code class="language-python">show_result(score + word)</code></pre>
     <p>
       Python will show a <code>TypeError</code> — it is telling you that
       you tried to add a number and a word together, which is not
@@ -494,8 +523,8 @@ operator_keys = ["+", "-", "x", "/"]</code></pre>
   <h3>&#x1F527; Step by Step — Swap In the Real Variables</h3>
   <p>
     Remove all the experimental lines from Phases 1–3
-    (the <code>input_readout</code>, <code>result_readout</code>,
-    <code>score</code>, <code>lives</code>, and <code>fruits</code>
+    (the <code>word</code>, <code>a</code>, <code>b</code>, <code>c</code>,
+    <code>d</code>, <code>score</code>, <code>lives</code>, and <code>fruits</code>
     lines, and any <code>show_input</code> / <code>show_result</code>
     calls you added for testing). Replace them with the real calculator
     variables below, keeping <code>setup_screen()</code>,
@@ -605,6 +634,11 @@ run()</code></pre>
       labelled box. You can read the value, use it, and replace it.
     </li>
     <li>
+      <strong>f-strings</strong> let you embed a variable's value directly
+      inside a string using <code>{curly brackets}</code> — much neater
+      than joining pieces with <code>+</code>.
+    </li>
+    <li>
       <strong>Strings</strong> (text) can be joined with <code>+</code>
       and repeated with <code>*</code>.
     </li>
@@ -621,7 +655,7 @@ run()</code></pre>
       brackets. Items are accessed by their index, starting at 0.
     </li>
     <li>
-      The <strong>calculator's state variables</strong> — five named
+      The <strong>calculator's state variables</strong> — four named
       values that keep track of what the user is typing and what
       the previous number and operator were.
     </li>
