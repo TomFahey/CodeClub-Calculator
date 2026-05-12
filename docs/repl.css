@@ -1,0 +1,268 @@
+/* ════════════════════════════════════════════════════════════════════
+   Floating Python REPL widget
+   Catppuccin Mocha colour palette
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── FAB (floating action button) ───────────────────────────────────── */
+#repl-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+#repl-fab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #2d6a4f;
+  color: #fff;
+  border: none;
+  border-radius: 28px;
+  padding: 11px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  transition: background 0.18s, transform 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+#repl-fab:hover {
+  background: #1b4332;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+}
+#repl-fab.repl-fab-open {
+  background: #1b4332;
+}
+
+/* ── Panel ────────────────────────────────────────────────────────────── */
+#repl-panel {
+  position: absolute;
+  bottom: 58px;
+  right: 0;
+  width: 370px;
+  background: #1e1e2e;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* collapsed by default */
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.22s ease;
+}
+#repl-panel.repl-open {
+  max-height: 560px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+#repl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #181825;
+  color: #cdd6f4;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+}
+#repl-close {
+  background: none;
+  border: none;
+  color: #6c7086;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+#repl-close:hover {
+  background: #313244;
+  color: #cdd6f4;
+}
+
+/* ── Simulated calculator display ─────────────────────────────────────── */
+#repl-display {
+  padding: 8px 12px 6px;
+  background: #181825;
+  border-bottom: 1px solid #313244;
+  flex-shrink: 0;
+}
+.repl-screen-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.repl-screen-label {
+  font-size: 10px;
+  color: #585b70;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: 72px;
+  flex-shrink: 0;
+}
+.repl-screen {
+  flex: 1;
+  background: #11111b;
+  color: #a6e3a1;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 13px;
+  padding: 4px 9px;
+  border-radius: 4px;
+  min-height: 22px;
+  word-break: break-all;
+}
+.repl-screen.repl-screen-default {
+  color: #45475a;
+  font-style: italic;
+}
+
+/* ── Code editor ─────────────────────────────────────────────────────── */
+#repl-editor {
+  padding: 8px 10px 4px;
+  flex-shrink: 0;
+}
+#repl-code {
+  width: 100%;
+  box-sizing: border-box;
+  background: #181825;
+  color: #cdd6f4;
+  border: 1px solid #313244;
+  border-radius: 6px;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  padding: 8px 10px;
+  resize: none;
+  height: 110px;
+  outline: none;
+  tab-size: 4;
+  caret-color: #89b4fa;
+  transition: border-color 0.15s;
+}
+#repl-code:focus {
+  border-color: #89b4fa;
+}
+#repl-code::placeholder {
+  color: #45475a;
+  font-style: italic;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────── */
+#repl-toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0 2px;
+  align-items: center;
+}
+#repl-run {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#repl-run:hover:not(:disabled) {
+  background: #b4d0ff;
+}
+#repl-run:disabled {
+  background: #313244;
+  color: #6c7086;
+  cursor: not-allowed;
+}
+#repl-clear {
+  background: none;
+  border: 1px solid #45475a;
+  color: #a6adc8;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+#repl-clear:hover {
+  border-color: #a6adc8;
+  color: #cdd6f4;
+}
+.repl-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: #45475a;
+}
+
+/* ── Output ───────────────────────────────────────────────────────────── */
+#repl-output-wrap {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 4px 10px 10px;
+}
+#repl-status {
+  font-size: 12px;
+  color: #a6adc8;
+  font-style: italic;
+  padding: 3px 0 2px;
+  min-height: 18px;
+}
+#repl-output {
+  margin: 0;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #cdd6f4;
+  background: #181825;
+  border-radius: 5px;
+  padding: 6px 9px;
+  min-height: 20px;
+  display: none; /* hidden until there is output */
+}
+#repl-output.has-output {
+  display: block;
+}
+#repl-output.repl-err {
+  color: #f38ba8;
+}
+
+/* ── "Try it" buttons on code blocks ─────────────────────────────────── */
+.repl-try-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #2d6a4f;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  margin-bottom: 2px;
+  opacity: 0.85;
+  transition: opacity 0.15s, background 0.15s;
+}
+.repl-try-btn:hover {
+  opacity: 1;
+  background: #1b4332;
+}
+.repl-try-wrap {
+  /* sits just below the <pre> block */
+  margin-top: -6px;
+  margin-bottom: 12px;
+}
