@@ -40,6 +40,8 @@ Designed as a multi-session pedagogical project for **10–11 year olds** who ha
 
 Lesson notes are hosted on **GitHub Pages**: https://tomfahey.github.io/CodeClub-Calculator/
 
+You can find a starter UIFlow2 project, with the `calculator_ui.py` already loaded, [here](https://uiflow2.m5stack.com/?pkey=9a131bc0e4ff42b988fbc4976df10078)
+
 ## Hardware
 
 - [M5Stack Tab5](https://docs.m5stack.com/en/core/Tab5) — ESP32-P4, 5" 1280×720 touchscreen
