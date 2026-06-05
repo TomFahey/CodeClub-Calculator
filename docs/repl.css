@@ -1,9 +1,10 @@
 /* ════════════════════════════════════════════════════════════════════
-   Floating Python REPL widget
-   Catppuccin Mocha colour palette
+   Calculator Simulator widget — floating panel
+   Calculator face uses real device colours (white/grey/orange/blue).
+   Code editor uses Catppuccin Mocha dark theme.
    ════════════════════════════════════════════════════════════════════ */
 
-/* ── FAB (floating action button) ───────────────────────────────────── */
+/* ── FAB ─────────────────────────────────────────────────────────────── */
 #repl-widget {
   position: fixed;
   bottom: 24px;
@@ -16,7 +17,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background: #2d6a4f;
+  background: #1a73e8;
   color: #fff;
   border: none;
   border-radius: 28px;
@@ -24,28 +25,27 @@
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
   transition: background 0.18s, transform 0.15s, box-shadow 0.15s;
   user-select: none;
 }
 #repl-fab:hover {
-  background: #1b4332;
+  background: #1558b0;
   transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.32);
 }
-#repl-fab.repl-fab-open {
-  background: #1b4332;
-}
+#repl-fab.repl-fab-open { background: #1558b0; }
 
-/* ── Panel ────────────────────────────────────────────────────────────── */
+/* ── Panel ───────────────────────────────────────────────────────────── */
 #repl-panel {
   position: absolute;
   bottom: 58px;
   right: 0;
-  width: 370px;
-  background: #1e1e2e;
-  border-radius: 14px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  width: 375px;
+  max-width: calc(100vw - 16px);
+  background: #181825;
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -53,27 +53,27 @@
   max-height: 0;
   opacity: 0;
   pointer-events: none;
-  transition: max-height 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.22s ease;
 }
 #repl-panel.repl-open {
-  max-height: 560px;
+  max-height: 720px;
   opacity: 1;
   pointer-events: auto;
 }
 
-/* ── Header ───────────────────────────────────────────────────────────── */
+/* ── Header ──────────────────────────────────────────────────────────── */
 #repl-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: #181825;
+  padding: 11px 14px;
+  background: #11111b;
   color: #cdd6f4;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.01em;
   flex-shrink: 0;
+  letter-spacing: 0.01em;
 }
 #repl-close {
   background: none;
@@ -82,57 +82,106 @@
   font-size: 17px;
   line-height: 1;
   cursor: pointer;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 4px;
   transition: background 0.15s, color 0.15s;
 }
-#repl-close:hover {
-  background: #313244;
-  color: #cdd6f4;
-}
+#repl-close:hover { background: #313244; color: #cdd6f4; }
 
-/* ── Simulated calculator display ─────────────────────────────────────── */
-#repl-display {
-  padding: 8px 12px 6px;
-  background: #181825;
-  border-bottom: 1px solid #313244;
+/* ── Calculator display ──────────────────────────────────────────────── */
+#calc-display {
+  background: #fafafa;
+  padding: 10px 16px 10px;
   flex-shrink: 0;
+  border-bottom: 1px solid #d4d4d4;
 }
-.repl-screen-row {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 4px;
+/* Expression line (top) — smaller, muted, right-aligned */
+.calc-display-input {
+  text-align: right;
+  font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
+  font-size: 14px;
+  color: #757575;
+  min-height: 20px;
+  word-break: break-all;
+  transition: color 0.15s;
 }
-.repl-screen-label {
-  font-size: 10px;
-  color: #585b70;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  width: 72px;
-  flex-shrink: 0;
-}
-.repl-screen {
-  flex: 1;
-  background: #11111b;
-  color: #a6e3a1;
-  font-family: 'Courier New', 'Consolas', monospace;
-  font-size: 13px;
-  padding: 4px 9px;
-  border-radius: 4px;
-  min-height: 22px;
+/* Result line (bottom) — large, bold, dark */
+.calc-display-result {
+  text-align: right;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 38px;
+  font-weight: 300;
+  color: #202124;
+  line-height: 1.1;
   word-break: break-all;
 }
-.repl-screen.repl-screen-default {
-  color: #45475a;
-  font-style: italic;
-}
 
-/* ── Code editor ─────────────────────────────────────────────────────── */
-#repl-editor {
-  padding: 8px 10px 4px;
+/* ── Button grid ─────────────────────────────────────────────────────── */
+/* The 3px gaps between buttons on a #c8c8c8 background replicate the
+   thin grey dividers visible on the real device. */
+#calc-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  padding: 3px;
+  background: #c8c8c8;
   flex-shrink: 0;
 }
+
+.calc-key {
+  height: 54px;
+  border: none;
+  border-radius: 2px;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  transition: filter 0.08s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Individual background/color set inline to match device colours exactly */
+}
+.calc-key:hover  { filter: brightness(0.88); }
+.calc-key:active,
+.calc-key.calc-key-active { filter: brightness(0.70); }
+
+/* ── Code editor section (collapsible) ───────────────────────────────── */
+#repl-editor-section {
+  flex-shrink: 0;
+  background: #1e1e2e;
+  border-top: 1px solid #313244;
+}
+
+#repl-editor-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  color: #a6adc8;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: system-ui, -apple-system, sans-serif;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+#repl-editor-toggle:hover { background: #2a2a3e; color: #cdd6f4; }
+
+#toggle-arrow {
+  font-size: 10px;
+  color: #585b70;
+}
+
+#repl-editor-body {
+  overflow: hidden;
+  /* open by default — JS toggles this */
+  max-height: 300px;
+  transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 10px 8px;
+}
+
 #repl-code {
   width: 100%;
   box-sizing: border-box;
@@ -141,83 +190,77 @@
   border: 1px solid #313244;
   border-radius: 6px;
   font-family: 'Courier New', 'Consolas', monospace;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.55;
-  padding: 8px 10px;
+  padding: 7px 9px;
   resize: none;
-  height: 110px;
+  height: 95px;
   outline: none;
   tab-size: 4;
   caret-color: #89b4fa;
   transition: border-color 0.15s;
 }
-#repl-code:focus {
-  border-color: #89b4fa;
-}
-#repl-code::placeholder {
-  color: #45475a;
-  font-style: italic;
-}
+#repl-code:focus { border-color: #89b4fa; }
+#repl-code::placeholder { color: #45475a; font-style: italic; }
 
-/* ── Toolbar ──────────────────────────────────────────────────────────── */
+/* ── Toolbar ─────────────────────────────────────────────────────────── */
 #repl-toolbar {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   padding: 6px 0 2px;
   align-items: center;
 }
+
 #repl-run {
   background: #89b4fa;
   color: #1e1e2e;
   border: none;
   border-radius: 6px;
-  padding: 6px 18px;
+  padding: 5px 16px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
 }
-#repl-run:hover:not(:disabled) {
-  background: #b4d0ff;
-}
+#repl-run:hover:not(:disabled) { background: #b4d0ff; }
 #repl-run:disabled {
   background: #313244;
   color: #6c7086;
   cursor: not-allowed;
 }
-#repl-clear {
+
+#repl-reset {
   background: none;
   border: 1px solid #45475a;
   color: #a6adc8;
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 5px 10px;
   font-size: 13px;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
-#repl-clear:hover {
-  border-color: #a6adc8;
-  color: #cdd6f4;
-}
+#repl-reset:hover { border-color: #a6adc8; color: #cdd6f4; }
+
 .repl-hint {
   margin-left: auto;
   font-size: 11px;
   color: #45475a;
 }
 
-/* ── Output ───────────────────────────────────────────────────────────── */
+/* ── Output ──────────────────────────────────────────────────────────── */
 #repl-output-wrap {
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  padding: 4px 10px 10px;
+  padding: 3px 10px 10px;
+  background: #1e1e2e;
 }
 #repl-status {
   font-size: 12px;
   color: #a6adc8;
   font-style: italic;
-  padding: 3px 0 2px;
-  min-height: 18px;
+  padding: 3px 0 1px;
+  min-height: 16px;
 }
 #repl-output {
   margin: 0;
@@ -229,22 +272,17 @@
   background: #181825;
   border-radius: 5px;
   padding: 6px 9px;
-  min-height: 20px;
-  display: none; /* hidden until there is output */
+  display: none;
 }
-#repl-output.has-output {
-  display: block;
-}
-#repl-output.repl-err {
-  color: #f38ba8;
-}
+#repl-output.has-output { display: block; }
+#repl-output.repl-err   { color: #f38ba8; }
 
-/* ── "Try it" buttons on code blocks ─────────────────────────────────── */
+/* ── "Try it" buttons below code blocks ─────────────────────────────── */
 .repl-try-btn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #2d6a4f;
+  background: #1a73e8;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -253,16 +291,12 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: 4px;
-  margin-bottom: 2px;
-  opacity: 0.85;
+  opacity: 0.87;
   transition: opacity 0.15s, background 0.15s;
+  font-family: system-ui, -apple-system, sans-serif;
 }
-.repl-try-btn:hover {
-  opacity: 1;
-  background: #1b4332;
-}
+.repl-try-btn:hover { opacity: 1; background: #1558b0; }
 .repl-try-wrap {
-  /* sits just below the <pre> block */
   margin-top: -6px;
   margin-bottom: 12px;
 }
